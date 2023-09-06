@@ -63,54 +63,16 @@ class RuntimeContext:
             print(f"Runtime error at line {lineno}, column {lexpos}: {e}")
 
 
-
-
-
-
-
+    # Expressions
     def evaluate_expression(self, ast, context):
         node_type = ast[0]
 
         if node_type == 'binop':
-            _, op, left, right = ast
-            left_value = self.run_ast(left, context)
-            right_value = self.run_ast(right, context)
-
-            left_type = type(left_value).__name__.upper()
-            right_type = type(right_value).__name__.upper()
-            
-            if op == '+':
-                return add(left_value, right_value)
-            elif op == '-':
-                return substract(left_value, right_value)
-            elif op == '*':
-                return multiply(left_value, right_value)
-            elif op == '/':
-                return divide(left_value, right_value)
+            return self.handle_binop(ast, context)
+        
         elif node_type == 'compare':
-            _, op, left, right = ast
-            left_value = self.run_ast(left, context)
-            right_value = self.run_ast(right, context)
-
-            left_type = type(left_value).__name__.upper()
-            right_type = type(right_value).__name__.upper()
-
-            if left_type != right_type:
-                raise TypeError(f"Type mismatch: {left_type} and {right_type} for operator {op}")
-
-            if op == '>':
-                return left_value > right_value
-            elif op == '<':
-                return left_value < right_value
-            elif op == '==':
-                return left_value == right_value
-            elif op == '>=':
-                return left_value >= right_value
-            elif op == '<=':
-                return left_value <= right_value
-            elif op == '!=':
-                return left_value != right_value
-
+           return self.handle_compare(ast, context)
+        
         elif node_type == 'number':
             return ast[1]
         
@@ -122,19 +84,60 @@ class RuntimeContext:
 
         elif node_type == 'string':
             return ast[1]
+        
         elif node_type == 'list_literal':
             _, elements = ast
             list_value = [self.run_ast(element, context) for element in elements]
             return list_value
+        
         elif node_type == 'identifier':
             return context.local_scope.get(ast[1], self.symbol_table.get(ast[1], None))['value']
+        
         elif node_type == 'casting':
             _, expr, type_to_cast = ast
             value = self.run_ast(expr, context)
             value = cast(value, type_to_cast)
             return value
         
+    def handle_binop(self, ast, context):
+        _, op, left, right = ast
+        left_value = self.run_ast(left, context)
+        right_value = self.run_ast(right, context)
+        if op == '+':
+            return add(left_value, right_value)
+        elif op == '-':
+            return substract(left_value, right_value)
+        elif op == '*':
+            return multiply(left_value, right_value)
+        elif op == '/':
+            return divide(left_value, right_value)
+        
+    def handle_compare(self, ast, context):
+        _, op, left, right = ast
+        left_value = self.run_ast(left, context)
+        right_value = self.run_ast(right, context)
 
+        left_type = type(left_value).__name__.upper()
+        right_type = type(right_value).__name__.upper()
+
+        if left_type != right_type:
+            raise TypeError(f"Type mismatch: {left_type} and {right_type} for operator {op}")
+
+        if op == '>':
+            return left_value > right_value
+        elif op == '<':
+            return left_value < right_value
+        elif op == '==':
+            return left_value == right_value
+        elif op == '>=':
+            return left_value >= right_value
+        elif op == '<=':
+            return left_value <= right_value
+        elif op == '!=':
+            return left_value != right_value
+        
+
+    # Variables
     def manage_variable(self, ast, context):
         node_type = ast[0]
 
@@ -181,6 +184,7 @@ class RuntimeContext:
             elif op == "/=":
                 var_info['value'] = var_info['value'] / value
 
+    # Control flow
     def control_flow(self, ast, context):
         node_type = ast[0]
         if node_type == 'if':
@@ -266,6 +270,7 @@ class RuntimeContext:
                 pass
         
 
+    # Functions
     def manage_function(self, ast, context):
         node_type = ast[0]
         if node_type == 'function_declaration':
@@ -309,6 +314,7 @@ class RuntimeContext:
             # If the function body didn't return, use the default return value
             return self.run_ast(default_return, context)
 
+    # Lists
     def list_operations(self, ast, context):
         node_type = ast[0]
         if node_type == 'index_access':
@@ -364,7 +370,7 @@ class RuntimeContext:
             return list_value.pop(to_remove)
         
             
-
+    # Misc
     def special_constructs(self, ast, context):
         node_type = ast[0]
         if node_type == 'break':
