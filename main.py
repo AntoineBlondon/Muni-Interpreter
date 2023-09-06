@@ -1,7 +1,7 @@
 import sys
 import os
 from munilexer import lexer
-from muniruntime import run_ast
+from muniruntime import RuntimeContext
 from muniparser import parser
 
 def read_file(filename):
@@ -39,7 +39,8 @@ def main(filename, args):
     ast = parse_input(input_text)
     location = "/".join(path.split("/")[:-1])
 
-    run_ast(ast, args=args, location=location)
+    runtime = RuntimeContext()
+    runtime.run_ast(ast, args=args, location=location)
 
 
 if __name__ == '__main__':
