@@ -1,4 +1,3 @@
-from native_graphics import *
 import os
 from copy import deepcopy
 from tkinter import *
