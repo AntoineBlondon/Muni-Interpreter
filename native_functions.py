@@ -17,7 +17,7 @@ def write_json(filename, data):
         json.dump(data, f)
 
 def call_native_function(name, args, run_ast, symbol_table, context):
-    func_info = native_functions.get(name)
+    func_info = native_functions_list.get(name)
     if func_info is None:
         raise KeyError(f"Native function {name} not found")
     
@@ -477,7 +477,7 @@ def native_read_value(native_context):
     return json_file.get(key)
     
 
-native_functions = {
+native_functions_list = {
     'print': native_print,
     'printlocal': native_print_local,
     'printglobal': native_print_global,
@@ -538,4 +538,4 @@ native_functions = {
 
 
 def declare(func_name, function):
-    native_functions[func_name] = function
+    native_functions_list[func_name] = function

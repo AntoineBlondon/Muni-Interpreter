@@ -301,7 +301,7 @@ class RuntimeContext:
 
         elif node_type == 'function_call':
             _, func_name, args = ast
-            if func_name in native_functions:
+            if func_name in native_functions_list:
                 if(context.debug): print(f"Debug: Calling native function {func_name} with arguments {args}")
                 return call_native_function(func_name, args, self.run_ast, self.symbol_table, context)
             if(context.debug): print(f"Debug: Calling function {func_name} with arguments {args} and parameters {params}")
@@ -479,13 +479,13 @@ def add_namespace(ast, namespace):
         node_type = node[0]
         if node_type == 'function_declaration':
             _, func_type, func_name, params, func_body, default_return, a, b = node
-            new_func_name = f"{namespace}|{func_name}" if func_name not in native_functions else func_name
+            new_func_name = f"{namespace}|{func_name}" if func_name not in native_functions_list else func_name
             new_func_body = add_namespace(func_body, namespace)
             new_node = ('function_declaration', func_type, new_func_name, params, new_func_body, default_return)
             new_ast.append(new_node)
         elif node_type == 'function_call':
             _, func_name, args, a, b = node
-            new_func_name = f"{namespace}|{func_name}" if func_name not in native_functions else func_name
+            new_func_name = f"{namespace}|{func_name}" if func_name not in native_functions_list else func_name
             new_node = ('function_call', new_func_name, args)
             new_ast.append(new_node)
         else:
