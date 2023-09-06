@@ -6,8 +6,15 @@ import random
 import readline
 import time
 import subprocess
+import json
 
+def read_json(filename):
+    with open(filename) as f:
+        return json.load(f)
 
+def write_json(filename, data):
+    with open(filename, 'w') as f:
+        json.dump(data, f)
 
 def call_native_function(name, args, run_ast, symbol_table, context):
     func_info = native_functions.get(name)
@@ -454,6 +461,22 @@ def native_update_autocomplete(native_context):
 def native_sleep(native_context):
     time.sleep(native_context.get_arg(0))
 
+
+def native_store_value(native_context):
+    file = native_context.get_arg(0)
+    key = native_context.get_arg(1)
+    value = native_context.get_arg(2)
+    json_file = read_json(file)
+    json_file[key] = value
+    write_json(file, json_file)
+
+def native_read_value(native_context):
+    file = native_context.get_arg(0)
+    key = native_context.get_arg(1)
+    json_file = read_json(file)
+    return json_file.get(key)
+    
+
 native_functions = {
     'print': native_print,
     'printlocal': native_print_local,
@@ -507,6 +530,8 @@ native_functions = {
     "printend": native_printend,
     "clear_screen": native_clear_screen,
     "get_terminal_size": native_get_terminal_size,
+    "store_value": native_store_value,
+    "read_value": native_read_value,
 
 }
 
