@@ -403,7 +403,7 @@ command_history = []
 
 def native_add_command_to_history(native_context):
     command_history.append(native_context.get_arg(0))
-    readline.add_history(native_context.get_arg(0))
+    readline.set_auto_history(command_history)
 
 commands = []
 
