@@ -1,8 +1,8 @@
 import sys
 import os
-from lexer import lexer
+from munilexer import lexer
 from runtime import run_ast
-from mparser import parser
+from muniparser import parser
 
 def read_file(filename):
     """Read a file and return its content."""
