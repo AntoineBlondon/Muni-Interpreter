@@ -39,7 +39,7 @@ class RuntimeContext:
             lexpos = ast[-1] if len(ast) > 1 and type(ast[-1]) == int else "unknown"
             if lineno != "unknown" and lexpos != "unknown": ast = ast[:-2]
 
-            if node_type in ['binop', 'number', 'float', 'boolean', 'string','list_literal', 'identifier', 'compare', 'casting', 'not']:
+            if node_type in ['binop', 'number', 'float', 'boolean', 'string','list_literal', 'identifier', 'compare', 'casting', 'logical_operation']:
                 return self.evaluate_expression(ast, context)
             elif node_type in ['declare', 'assign', 'double_operation']:
                 return self.manage_variable(ast, context)
@@ -73,8 +73,8 @@ class RuntimeContext:
         elif node_type == 'compare':
            return self.handle_compare(ast, context)
         
-        elif node_type == 'not':
-            return not self.run_ast(ast[1], context)
+        elif node_type == 'logical_operation':
+            return self.handle_logical_operation(ast, context)
         
         elif node_type == 'number':
             return ast[1]
@@ -138,6 +138,22 @@ class RuntimeContext:
             return left_value <= right_value
         elif op == '!=':
             return left_value != right_value
+    
+    def handle_logical_operation(self, ast, context):
+        if(len(ast) == 3):
+            _, op, expr = ast
+            if op == "!":
+                return not self.run_ast(expr, context)
+        _, op, left, right = ast
+        left_value = self.run_ast(left, context)
+        right_value = self.run_ast(right, context)
+
+        if op == '&':
+            return left_value and right_value
+        elif op == '|':
+            return left_value or right_value
+        elif op == '^':
+            return left_value ^ right_value
         
 
     # Variables
