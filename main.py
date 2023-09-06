@@ -1,7 +1,7 @@
 import sys
 import os
 from munilexer import lexer
-from runtime import run_ast
+from muniruntime import run_ast
 from muniparser import parser
 
 def read_file(filename):
