@@ -240,6 +240,9 @@ def native_rm(native_context):
 def get_args(native_context):
     return native_context.context.args
 
+def native_get_ran_location(native_context):
+    return native_context.context.location
+
 def get_location(native_context):
     try:
         with open("/home/antoineblondon/perso/octaros/cache.txt", 'r') as f:
@@ -532,6 +535,7 @@ native_functions_list = {
     "get_terminal_size": native_get_terminal_size,
     "store_value": native_store_value,
     "read_value": native_read_value,
+    "get_ran_location": native_get_ran_location,
 
 }
 
