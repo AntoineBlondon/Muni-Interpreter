@@ -40,7 +40,7 @@ tokens = [
     
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'PIPE',
-    
+    'EXCLAMATION',
     'INTEGER_LITERAL', 'STRING_LITERAL', 'FLOAT_LITERAL',
 ] + list(keywords.values())
 
@@ -84,6 +84,7 @@ t_LE = r'<='
 t_EQ = r'=='
 t_NE = r'!='
 
+t_EXCLAMATION = r'!'
 t_UNTYPED = r'\?'
 t_AT = r'@'
 

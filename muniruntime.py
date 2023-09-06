@@ -39,7 +39,7 @@ class RuntimeContext:
             lexpos = ast[-1] if len(ast) > 1 and type(ast[-1]) == int else "unknown"
             if lineno != "unknown" and lexpos != "unknown": ast = ast[:-2]
 
-            if node_type in ['binop', 'number', 'float', 'boolean', 'string','list_literal', 'identifier', 'compare', 'casting']:
+            if node_type in ['binop', 'number', 'float', 'boolean', 'string','list_literal', 'identifier', 'compare', 'casting', 'not']:
                 return self.evaluate_expression(ast, context)
             elif node_type in ['declare', 'assign', 'double_operation']:
                 return self.manage_variable(ast, context)
@@ -72,6 +72,9 @@ class RuntimeContext:
         
         elif node_type == 'compare':
            return self.handle_compare(ast, context)
+        
+        elif node_type == 'not':
+            return not self.run_ast(ast[1], context)
         
         elif node_type == 'number':
             return ast[1]

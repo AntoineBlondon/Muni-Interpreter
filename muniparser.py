@@ -264,6 +264,9 @@ def p_expression_compare(p):
                   | expression NE expression'''
     p[0] = ('compare', p[2], p[1], p[3], p.lineno(1), find_column(p.lexpos(1)))
 
+def p_expression_not(p):
+    'expression : EXCLAMATION expression'
+    p[0] = ('not', p[2], p.lineno(1), find_column(p.lexpos(1)))
 
 def p_expression(p):
     '''expression : LPAREN expression RPAREN'''
