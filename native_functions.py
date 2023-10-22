@@ -259,7 +259,6 @@ def copy(native_context):
     return deepcopy(native_context.get_arg(0))
 
 
-
 windows = {}  # To keep track of created windows
 entries = {}  # To keep track of created entries
 texts = {}  # To keep track of created text widgets
@@ -478,6 +477,9 @@ def native_read_value(native_context):
     key = native_context.get_arg(1)
     json_file = read_json(file)
     return json_file.get(key)
+
+def native_get_base_location(native_context):
+    return native_context.context.base_location
     
 
 native_functions_list = {
@@ -536,6 +538,7 @@ native_functions_list = {
     "store_value": native_store_value,
     "read_value": native_read_value,
     "get_ran_location": native_get_ran_location,
+    "get_base_location": native_get_base_location
 
 }
 

@@ -558,6 +558,7 @@ class ExecutionASTContext:
         self.args = args
         self.location = location
         self.function_table = {}
+        self.base_location = location
 
 
 
