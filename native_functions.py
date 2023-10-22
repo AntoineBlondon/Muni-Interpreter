@@ -2,6 +2,7 @@ import os
 from copy import deepcopy
 from tkinter import *
 from rich import print as rprint
+from rich.prompt import Prompt
 import random
 import readline
 import time
@@ -65,7 +66,7 @@ def native_printend(native_context):
     print(native_context.get_arg(0), end=native_context.get_arg(1))
 
 def native_input(native_context):
-    return input(" ".join(str(arg) for arg in native_context.get_args()))
+    return Prompt.ask(" ".join(str(arg) for arg in native_context.get_args()))
 
 def native_print_local(native_context):
     print(native_context.context.local_scope)
