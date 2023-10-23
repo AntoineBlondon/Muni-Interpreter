@@ -65,10 +65,14 @@ def native_clear_screen(native_context):
 def native_printend(native_context):
     print(native_context.get_arg(0), end=native_context.get_arg(1))
 
-def native_input(native_context):
-    console = Console()
 
-    return console.input(" ".join(str(arg) for arg in native_context.get_args()))
+def native_input(native_context):
+    try:
+        if type(native_context.get_arg(1)) == bool and native_context.get_arg(1):
+            console = Console()
+            return console.input(str(native_context.get_arg(0)))
+    except:
+        return input(" ".join(str(arg) for arg in native_context.get_args()))
 
 def native_print_local(native_context):
     print(native_context.context.local_scope)
