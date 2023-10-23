@@ -8,6 +8,16 @@ import readline
 import time
 import subprocess
 import json
+from time import monotonic
+
+from textual.app import App, ComposeResult
+from textual.containers import ScrollableContainer
+from textual.reactive import reactive
+from textual.widgets import Button, Footer, Header, Static
+
+
+apps = {}
+
 
 def read_json(filename):
     with open(filename) as f:
@@ -487,7 +497,58 @@ def native_read_value(native_context):
 
 def native_get_base_location(native_context):
     return native_context.context.base_location
+
+
+def native_create_app(native_context):
+    class BasicApp(App):
+        widgets = []
+        button_text = "Yes"
+        BINDINGS = [
+            ("d", "toggle_dark", "Toggle dark mode"),
+        ]
+        def compose(self) -> ComposeResult:
+            """Called to add widgets to the app."""
+            yield Header()
+            for widget in self.widgets:
+                yield widget
+
+        def action_toggle_dark(self) -> None:
+            """An action to toggle dark mode."""
+            self.dark = not self.dark
+            
+    app_id = id(BasicApp)  # Use the ID of the class as a unique reference
+    apps[app_id] = BasicApp()
     
+    return app_id
+
+
+def native_run_app(native_context):
+    app_id = native_context.get_arg(0)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        app_instance.run()
+
+
+def native_add_button(native_context):
+    app_id = native_context.get_arg(0)
+    button_text = native_context.get_arg(1)
+    button_id = native_context.get_arg(2)
+    button_variant = native_context.get_arg(3)  # Default to 'primary' if not provided
+
+    app_instance = apps.get(app_id)
+    if app_instance:
+        button = Button(button_text, id=button_id, variant=button_variant)
+        app_instance.widgets.append(button)
+
+def native_set_button_text(native_context):
+    app_id = native_context.get_arg(0)
+    button_text = native_context.get_arg(1)
+    app_instance = apps.get(app_id)
+    
+    if app_instance:
+        # This is just an example, in a real scenario, you might modify the app's structure.
+        app_instance.header_text = button_text
+
 
 native_functions_list = {
     'print': native_print,
@@ -545,7 +606,11 @@ native_functions_list = {
     "store_value": native_store_value,
     "read_value": native_read_value,
     "get_ran_location": native_get_ran_location,
-    "get_base_location": native_get_base_location
+    "get_base_location": native_get_base_location,
+    "create_app": native_create_app,
+    "run_app": native_run_app,
+    "set_button_text": native_set_button_text,
+    "add_button": native_add_button
 
 }
 
