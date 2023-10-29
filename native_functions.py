@@ -548,12 +548,12 @@ def native_create_app(native_context):
             if callable(action_callable):
                 action_callable()
         
-        def action_do_nothing(self):
+        def action_do_nothing(self, arg):
             pass
 
         def on_mount(self):
             for binding in self.BINDINGS:
-                self.bind(keys=binding.key, action="do_nothing", description=binding.description)
+                self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
 
         def on_key(self, event: events.Key):
             # check if the key is one of the bindings
