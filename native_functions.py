@@ -8,15 +8,22 @@ import readline
 import time
 import subprocess
 import json
+import uuid
 from time import monotonic
-
+from textual import events
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer
+from textual.binding import Binding
 from textual.reactive import reactive
-from textual.widgets import Button, Footer, Header, Static
+from textual.widgets import Button, Footer, Header, Static, TextArea
+from textual.keys import Keys
+import logging
+
+logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
 apps = {}
+
 
 
 def read_json(filename):
@@ -33,10 +40,13 @@ def call_native_function(name, args, run_ast, symbol_table, context):
         raise KeyError(f"Native function {name} not found")
     
     native_context = ExecutionNativeContext(args, run_ast, symbol_table, context)
+    
+    
     return func_info(native_context)
 
 def call_function(name, args, run_ast, symbol_table, context):
     func_info = context.function_table.get(name)
+    
     if func_info is None:
         raise KeyError(f"Function {name} not found")
     
@@ -59,6 +69,11 @@ class ExecutionNativeContext:
         return args
 
 
+def generate_valid_id(prefix):
+    """Generate a valid textual ID using UUID."""
+    return prefix + '-' + str(uuid.uuid4()).replace('-', '_')
+
+
 def native_get_terminal_size(native_context):
     rows, columns = subprocess.check_output(['stty', 'size']).decode().split()
     return [int(rows), int(columns)]
@@ -67,6 +82,9 @@ def native_get_terminal_size(native_context):
 
 def native_print(native_context):
     rprint(" ".join(str(arg) for arg in native_context.get_args()))
+
+def native_log(native_context):
+    logging.debug(" ".join(str(arg) for arg in native_context.get_args()))
 
 
 def native_clear_screen(native_context):
@@ -498,23 +516,50 @@ def native_read_value(native_context):
 def native_get_base_location(native_context):
     return native_context.context.base_location
 
+class Binding:
+    def __init__(self, key, action, description):
+        self.key = key
+        self.action = action  # This is now a callable
+        self.description = description
+
 
 def native_create_app(native_context):
     class BasicApp(App):
+        
         widgets = []
         button_text = "Yes"
         BINDINGS = [
-            ("d", "toggle_dark", "Toggle dark mode"),
         ]
+
+        actions = {}
+       
         def compose(self) -> ComposeResult:
             """Called to add widgets to the app."""
             yield Header()
+            yield Footer()
             for widget in self.widgets:
                 yield widget
 
-        def action_toggle_dark(self) -> None:
-            """An action to toggle dark mode."""
-            self.dark = not self.dark
+
+        def do_action(self, key):
+            action_callable = self.actions[key]
+            
+            # If a valid callable is found, execute it
+            if callable(action_callable):
+                action_callable()
+        
+        def action_do_nothing(self):
+            pass
+
+        def on_mount(self):
+            for binding in self.BINDINGS:
+                self.bind(keys=binding.key, action="do_nothing", description=binding.description)
+
+        def on_key(self, event: events.Key):
+            # check if the key is one of the bindings
+            for binding in self.BINDINGS:
+                if binding.key == event.key:
+                    self.do_action(event.key)
             
     app_id = id(BasicApp)  # Use the ID of the class as a unique reference
     apps[app_id] = BasicApp()
@@ -532,13 +577,15 @@ def native_run_app(native_context):
 def native_add_button(native_context):
     app_id = native_context.get_arg(0)
     button_text = native_context.get_arg(1)
-    button_id = native_context.get_arg(2)
-    button_variant = native_context.get_arg(3)  # Default to 'primary' if not provided
+    
+    button_variant = native_context.get_arg(2)  
+    button_id = generate_valid_id("btn")
 
     app_instance = apps.get(app_id)
     if app_instance:
         button = Button(button_text, id=button_id, variant=button_variant)
         app_instance.widgets.append(button)
+        return button_id
 
 def native_set_button_text(native_context):
     app_id = native_context.get_arg(0)
@@ -548,6 +595,54 @@ def native_set_button_text(native_context):
     if app_instance:
         # This is just an example, in a real scenario, you might modify the app's structure.
         app_instance.header_text = button_text
+
+
+def native_add_text_area(native_context):
+    app_id = native_context.get_arg(0)
+    text_area_id = generate_valid_id("ta")
+    text = native_context.get_arg(1)
+    language = native_context.get_arg(2)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        text_area = TextArea(text, language= language, id=text_area_id)
+        app_instance.widgets.append(text_area)
+        return text_area_id
+
+
+def get_text_from_text_area(native_context):
+    app_instance = apps.get(native_context.get_arg(0))
+    if app_instance:
+        for widget in app_instance.widgets:
+            if widget.id == native_context.get_arg(1):
+                return widget.text
+
+
+def native_add_binding(native_context):
+    app_id = native_context.get_arg(0)
+    key = native_context.get_arg(1)
+    function_name = native_context.get_arg(2)
+    variables_name = native_context.get_arg(3)
+    binding_text = native_context.get_arg(4)
+
+    binding = Binding(key, "do_action", binding_text)
+    
+    variables = []
+    for variable in variables_name.split(","):
+        variables.append(("identifier", variable))
+
+    app_instance = apps.get(app_id)
+    if app_instance:
+        app_instance.BINDINGS.append(binding)
+        app_instance.actions[binding.key] = lambda: call_function(function_name, variables, native_context.run_ast, native_context.symbol_table, native_context.context)
+        
+
+
+
+def native_exit_app(native_context):
+    app_id = native_context.get_arg(0)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        app_instance.exit()
 
 
 native_functions_list = {
@@ -610,7 +705,12 @@ native_functions_list = {
     "create_app": native_create_app,
     "run_app": native_run_app,
     "set_button_text": native_set_button_text,
-    "add_button": native_add_button
+    "add_button": native_add_button,
+    "add_text_area": native_add_text_area,
+    "add_binding": native_add_binding,
+    "log": native_log,
+    "get_text_from_text_area": get_text_from_text_area,
+    "exit_app": native_exit_app
 
 }
 
