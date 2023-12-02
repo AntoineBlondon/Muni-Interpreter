@@ -602,7 +602,15 @@ def native_add_timer(native_context):
     app_instance = apps.get(app_id)
     if app_instance:
         timer = TimerWidget()
-        app_instance.widgets.append(timer)
+        app_instance.widgets.append(timer)  # Storing reference to the widget
+        # Modify the on_mount of the app to dock this widget
+        original_on_mount = app_instance.on_mount
+
+        async def modified_on_mount():
+            await original_on_mount()
+            await app_instance.view.dock(timer)
+
+        app_instance.on_mount = modified_on_mount
         return timer
 
 
