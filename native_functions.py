@@ -531,6 +531,12 @@ def native_create_app(native_context):
         button_text = "Yes"
         BINDINGS = [
         ]
+        CSS = """
+        Screen {
+            align: center middle;
+            width: auto;
+        }
+        """
 
         actions = {}
         def compose(self) -> ComposeResult:
@@ -574,32 +580,6 @@ def native_run_app(native_context):
     app_instance = apps.get(app_id)
     if app_instance:
         app_instance.run()
-
-def native_add_grid_layout(native_context):
-    app_id = native_context.get_arg(0)
-    grid_rows = native_context.get_arg(1)
-    grid_columns = native_context.get_arg(2)
-
-    grid_layout = GridLayout()
-    grid_layout.grid.   set_align("center", "center")
-    
-    app_instance = apps.get(app_id)
-    if app_instance:
-        app_instance.layout = grid_layout
-        app_instance.view.dock(grid_layout)  # Dock the grid to the app's view
-        return id(grid_layout)
-
-
-def native_add_widget_to_grid_layout(native_context):
-    app_id = native_context.get_arg(0)
-    widget_id = native_context.get_arg(1)
-    grid_position = native_context.get_arg(2)  # e.g., (row, column)
-
-    app_instance = apps.get(app_id)
-    if app_instance and hasattr(app_instance, 'layout'):
-        for widget in app_instance.widgets:
-            if widget.id == widget_id:
-                app_instance.layout.add_widget(widget, grid_position)
 
 def native_add_button(native_context):
     app_id = native_context.get_arg(0)
@@ -740,9 +720,7 @@ native_functions_list = {
     "add_binding": native_add_binding,
     "log": native_log,
     "get_text_from_text_area": get_text_from_text_area,
-    "exit_app": native_exit_app,
-    "add_grid_layout": native_add_grid_layout,
-    "add_widget_to_grid_layout": native_add_widget_to_grid_layout
+    "exit_app": native_exit_app
 
 }
 
