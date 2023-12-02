@@ -537,6 +537,10 @@ def native_create_app(native_context):
             width: auto;
         }
         """
+        def __init__(self):
+            super().__init__()
+            if len(native_context.get_args()) > 0:
+                self.title = native_context.get_arg(0)
 
         actions = {}
         def compose(self) -> ComposeResult:
