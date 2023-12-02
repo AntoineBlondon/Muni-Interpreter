@@ -453,6 +453,7 @@ def native_add_timer(native_context):
 
         def on_mount(self):
             # Start the timer with 60 seconds
+            self.watch("time_left", self.refresh)
             self.set_timer(60)
 
         async def set_timer(self, seconds):
@@ -461,10 +462,13 @@ def native_add_timer(native_context):
                 await asyncio.sleep(1)
                 self.time_left -= 1
                 self.refresh()
+        def refresh(self):
+            self.refresh_layout()  # Force a refresh of the layout
 
         def render(self):
             logging.debug(f"Time Left: {self.time_left}")
             return Text(f"Time Left: {self.time_left}")
+        
     app_id = native_context.get_arg(0)
     app_instance = apps.get(app_id)
     if app_instance:
