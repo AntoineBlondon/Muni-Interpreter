@@ -564,9 +564,12 @@ def native_create_app(native_context):
         def action_do_nothing(self, arg):
             pass
 
-        def on_mount(self):
+        async def on_mount(self):
+            # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
+            for widget in self.widgets:
+                await self.view.dock(widget, edge="top")
 
         def on_key(self, event: events.Key):
             # check if the key is one of the bindings
@@ -579,11 +582,10 @@ def native_create_app(native_context):
     
     return app_id
 
-
 def native_add_timer(native_context):
     class TimerWidget(Widget):
         # Reactive variable to update the display
-        time_left = Reactive(0)
+        time_left = Reactive(60)
 
         def on_mount(self):
             # Start the timer with 60 seconds
@@ -597,20 +599,21 @@ def native_add_timer(native_context):
             # Add logic here for when the timer finishes
 
         def render(self):
-            return f"Time Left: {self.time_left}"
+            # Ensure proper renderable is returned
+            return Text(f"Time Left: {self.time_left}")
+
     app_id = native_context.get_arg(0)
     app_instance = apps.get(app_id)
     if app_instance:
         timer = TimerWidget()
-        app_instance.widgets.append(timer)  # Storing reference to the widget
-        # Modify the on_mount of the app to dock this widget
-        original_on_mount = app_instance.on_mount
+        app_instance.widgets.append(timer)
+        
+        # Modify the on_mount method to dock the timer widget
+        async def on_mount_override():
+            await app_instance.view.dock(timer, edge="top")
 
-        async def modified_on_mount():
-            await original_on_mount()
-            await app_instance.view.dock(timer)
+        app_instance.on_mount = on_mount_override
 
-        app_instance.on_mount = modified_on_mount
         return timer
 
 
