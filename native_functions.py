@@ -589,12 +589,15 @@ def native_add_button(native_context):
 
 def native_set_button_text(native_context):
     app_id = native_context.get_arg(0)
-    button_text = native_context.get_arg(1)
+    button_id = native_context.get_arg(1)
+    button_text = native_context.get_arg(2)
     app_instance = apps.get(app_id)
     
     if app_instance:
-        # This is just an example, in a real scenario, you might modify the app's structure.
-        app_instance.header_text = button_text
+        for widget in app_instance.widgets:
+            if widget.id == button_id:
+                widget.text = button_text
+        
 
 
 def native_add_text_area(native_context):
