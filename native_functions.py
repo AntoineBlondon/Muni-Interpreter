@@ -433,8 +433,6 @@ def native_create_app(native_context):
             # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
-            for widget in self.widgets:
-                await self.view.dock(widget)
 
         def on_key(self, event: events.Key):
             # check if the key is one of the bindings
@@ -461,7 +459,7 @@ def native_add_timer(native_context):
             while self.time_left > 0:
                 await asyncio.sleep(1)
                 self.time_left -= 1
-            # Add logic here for when the timer finishes
+                self.refresh()
 
         def render(self):
             # Ensure proper renderable is returned
