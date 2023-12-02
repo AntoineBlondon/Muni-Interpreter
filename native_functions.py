@@ -1,6 +1,5 @@
 import os
 from copy import deepcopy
-from tkinter import Tk, Label, Entry, Text, Canvas, Listbox
 from rich import print as rprint
 from rich.console import Console
 import random
@@ -464,7 +463,7 @@ def native_add_timer(native_context):
 
         def render(self):
             # Ensure proper renderable is returned
-            return Text(f"Time Left: {self.time_left}")
+            return f"Time Left: {self.time_left}"
 
     app_id = native_context.get_arg(0)
     app_instance = apps.get(app_id)
