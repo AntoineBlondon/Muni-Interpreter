@@ -569,6 +569,8 @@ def native_create_app(native_context):
             # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
+            for a in dir(self):
+                print(a)
             for widget in self.widgets:
                 self.view.dock(widget, edge="top")
 
