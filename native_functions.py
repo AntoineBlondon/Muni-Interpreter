@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from tkinter import *
+from tkinter import Tk, Label, Entry, Text, Canvas, Listbox
 from rich import print as rprint
 from rich.console import Console
 import random
@@ -16,6 +16,7 @@ from textual.containers import ScrollableContainer
 from textual.binding import Binding
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Static, TextArea
+from textual.widget import Widget as TWidget
 from textual.reactive import Reactive
 from textual.keys import Keys
 import asyncio
@@ -583,7 +584,7 @@ def native_create_app(native_context):
     return app_id
 
 def native_add_timer(native_context):
-    class TimerWidget(Widget):
+    class TimerWidget(TWidget):
         # Reactive variable to update the display
         time_left = Reactive(60)
 
