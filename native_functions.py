@@ -570,7 +570,7 @@ def native_create_app(native_context):
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
             for widget in self.widgets:
-                self.view.dock(widget, edge="top")
+                self.dock(widget, edge="top")
 
         def on_key(self, event: events.Key):
             # check if the key is one of the bindings
