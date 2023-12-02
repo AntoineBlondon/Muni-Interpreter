@@ -16,8 +16,9 @@ from textual.containers import ScrollableContainer
 from textual.binding import Binding
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Static, TextArea
-from textual.layouts.grid import GridLayout
+from textual.reactive import Reactive
 from textual.keys import Keys
+import asyncio
 import logging
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
@@ -577,6 +578,32 @@ def native_create_app(native_context):
     apps[app_id] = BasicApp()
     
     return app_id
+
+
+def native_create_timer(native_context):
+    class TimerWidget(Widget):
+        # Reactive variable to update the display
+        time_left = Reactive(0)
+
+        def on_mount(self):
+            # Start the timer with 60 seconds
+            self.set_timer(60)
+
+        async def set_timer(self, seconds):
+            self.time_left = seconds
+            while self.time_left > 0:
+                await asyncio.sleep(1)
+                self.time_left -= 1
+            # Add logic here for when the timer finishes
+
+        def render(self):
+            return f"Time Left: {self.time_left}"
+    app_id = native_context.get_arg(0)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        timer = TimerWidget()
+        app_instance.widgets.append(timer)
+        return timer
 
 
 def native_run_app(native_context):
