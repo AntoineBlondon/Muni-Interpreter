@@ -467,6 +467,7 @@ def native_add_timer(native_context):
 
         def render(self):
             logging.debug(f"Time Left: {self.time_left}")
+            time.sleep(2)
             return Text(f"Time Left: {self.time_left}")
         
     app_id = native_context.get_arg(0)
