@@ -596,7 +596,7 @@ def native_set_button_text(native_context):
     if app_instance:
         for widget in app_instance.widgets:
             if widget.id == button_id:
-                widget.text = button_text
+                widget.label = button_text
         
 
 
