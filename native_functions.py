@@ -432,15 +432,10 @@ def native_create_app(native_context):
 
         async def on_mount(self):
             # Dock all widgets in the widgets list
-            logging.debug("Linking bindings")
-            await asyncio.sleep(2)
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
-            logging.debug("Docking widgets")
-            await asyncio.sleep(2)
             for widget in self.widgets:
                 await self.mount(widget)
-            logging.debug("Done")
 
 
         def on_key(self, event: events.Key):
