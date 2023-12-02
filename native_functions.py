@@ -452,7 +452,7 @@ def native_add_timer(native_context):
         # Reactive variable to update the display
         time_left = Reactive(30)
 
-        def on_mount(self):
+        async def on_mount(self):
             # Start the timer with 60 seconds
             self.set_timer(60)
 
