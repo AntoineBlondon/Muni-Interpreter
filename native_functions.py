@@ -453,7 +453,7 @@ def native_add_timer(native_context):
 
         def on_mount(self):
             # Start the timer with 60 seconds
-            self.watch(attribute_name="time_left", callback=self.refresh)
+            self.watch(obj=self, attribute_name="time_left", callback=self.refresh)
             self.set_timer(60)
 
         async def set_timer(self, seconds):
