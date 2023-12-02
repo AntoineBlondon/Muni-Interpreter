@@ -475,12 +475,6 @@ def native_add_timer(native_context):
     if app_instance:
         timer = TimerWidget()
         app_instance.widgets.append(timer)
-        
-        # Modify the on_mount method to dock the timer widget
-        async def on_mount_override():
-            await app_instance.mount(timer)
-
-        app_instance.on_mount = on_mount_override
 
         return timer
 
