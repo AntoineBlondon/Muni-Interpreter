@@ -297,141 +297,6 @@ def copy(native_context):
     return deepcopy(native_context.get_arg(0))
 
 
-windows = {}  # To keep track of created windows
-entries = {}  # To keep track of created entries
-texts = {}  # To keep track of created text widgets
-canvases = {}  # To keep track of created canvases
-widgets = {}
-
-def native_create_window(native_context):
-    window_name = native_context.get_arg(0)
-    window = Tk()
-    windows[window_name] = window
-
-def native_create_label(native_context):
-    window_name = native_context.get_arg(0)
-    text = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        label = Label(window, text=text)
-        label.pack()
-
-def native_mainloop(native_context):
-    window_name = native_context.get_arg(0)
-    window = windows.get(window_name)
-    if window:
-        window.mainloop()
-
-def native_create_button(native_context):
-    window_name = native_context.get_arg(0)
-    text = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        button = Button(window, text=text)
-        button.pack()
-
-def native_bind_button(native_context):
-    window_name = native_context.get_arg(0)
-    text = native_context.get_arg(1)
-    function_name = native_context.get_arg(2)
-    window = windows.get(window_name)
-    if window:
-        button = Button(window, text=text, command=lambda: call_function(function_name, [], native_context.run_ast, native_context.symbol_table, native_context.context))
-        button.pack()
-
-
-def native_create_entry(native_context):
-    window_name = native_context.get_arg(0)
-    entry_name = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        entry = Entry(window)
-        entry.pack()
-        entries[entry_name] = entry
-
-def native_get_entry(native_context):
-    entry_name = native_context.get_arg(0)
-    entry = entries.get(entry_name)
-    if entry:
-        return entry.get()
-
-
-def native_create_text(native_context):
-    window_name = native_context.get_arg(0)
-    text_name = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        text = Text(window)
-        text.pack()
-        texts[text_name] = text
-
-def native_get_text(native_context):
-    text_name = native_context.get_arg(0)
-    text = texts.get(text_name)
-    if text:
-        return text.get("1.0", "end-1c")
-    
-
-def native_create_canvas(native_context):
-    window_name = native_context.get_arg(0)
-    canvas_name = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        canvas = Canvas(window)
-        canvas.pack()
-        canvases[canvas_name] = canvas
-
-def native_draw_rectangle(native_context):
-    canvas_name = native_context.get_arg(0)
-    x1, y1, x2, y2 = native_context.get_arg(1), native_context.get_arg(2), native_context.get_arg(3), native_context.get_arg(4)
-    canvas = canvases.get(canvas_name)
-    if canvas:
-        canvas.create_rectangle(x1, y1, x2, y2)
-
-def native_set_text(native_context):
-    text_name = native_context.get_arg(0)
-    new_text = native_context.get_arg(1)
-    text_widget = texts.get(text_name)
-    if text_widget:
-        text_widget.delete("1.0", "end")  # Clear existing text
-        text_widget.insert("1.0", new_text)  # Insert new text
-
-
-def native_create_listbox(native_context):
-    window_name = native_context.get_arg(0)
-    listbox_name = native_context.get_arg(1)
-    window = windows.get(window_name)
-    if window:
-        listbox = Listbox(window)
-        listbox.pack()
-        widgets[listbox_name] = listbox  # Store in widgets dictionary
-
-def native_update_listbox(native_context):
-    listbox_name = native_context.get_arg(0)
-    items = native_context.get_arg(1)
-    listbox = widgets.get(listbox_name)
-    if listbox:
-        listbox.delete(0, "end")  # Clear existing items
-        for item in items:
-            listbox.insert("end", item)  # Insert new item at the end
-
-def native_bind_listbox(native_context):
-    listbox_name = native_context.get_arg(0)
-    event_type = native_context.get_arg(1)
-    function_name = native_context.get_arg(2)
-    listbox = widgets.get(listbox_name)
-    if listbox:
-        listbox.bind(event_type, lambda e: call_function(function_name, [], native_context.run_ast, native_context.symbol_table, native_context.context))
-
-def native_get_selected_listbox_item(native_context):
-    listbox_name = native_context.get_arg(0)
-    listbox = widgets.get(listbox_name)
-    if listbox:
-        selected_indexes = listbox.curselection()
-        if selected_indexes:
-            return listbox.get(selected_indexes[0])
-
-
 def native_randint(native_context):
     return random.randint(native_context.get_arg(0), native_context.get_arg(1))
 
@@ -722,28 +587,12 @@ native_functions_list = {
     'get_location': get_location,
     'set_location': set_location,
     'copy': copy,
-    'create_window': native_create_window,
-    'create_label': native_create_label,
-    'mainloop': native_mainloop,
-    'create_button': native_create_button,
-    'bind_button': native_bind_button,
-    'create_entry': native_create_entry,
-    'get_entry': native_get_entry,
-    'create_text': native_create_text,
-    'get_text': native_get_text,
-    'create_canvas': native_create_canvas,
-    'draw_rectangle': native_draw_rectangle,
-    'set_text': native_set_text,
     'move_file': native_move_file,
     'resolve_path': native_resolve_path,
     'randint': native_randint,
     'add_command_to_history': native_add_command_to_history,
     'add_autocomplete': native_add_autocomplete,
     'update_autocomplete': native_update_autocomplete,
-    'create_listbox': native_create_listbox,
-    'update_listbox': native_update_listbox,
-    'bind_listbox': native_bind_listbox,
-    'get_selected_listbox_item': native_get_selected_listbox_item,
     'file_exists': native_file_exists,
     'sleep': native_sleep,
     "printend": native_printend,
