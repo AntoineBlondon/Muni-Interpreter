@@ -16,6 +16,7 @@ from textual.containers import ScrollableContainer
 from textual.binding import Binding
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Static, TextArea
+from textual.layouts.grid import GridLayout
 from textual.keys import Keys
 import logging
 
@@ -532,14 +533,15 @@ def native_create_app(native_context):
         ]
 
         actions = {}
-       
         def compose(self) -> ComposeResult:
             """Called to add widgets to the app."""
             yield Header()
             yield Footer()
-            for widget in self.widgets:
-                yield widget
-
+            if hasattr(self, 'layout'):
+                yield self.layout
+            else:
+                for widget in self.widgets:
+                    yield widget
 
         def do_action(self, key):
             action_callable = self.actions[key]
@@ -573,6 +575,30 @@ def native_run_app(native_context):
     if app_instance:
         app_instance.run()
 
+def native_add_grid_layout(native_context):
+    app_id = native_context.get_arg(0)
+    grid_rows = native_context.get_arg(1)
+    grid_columns = native_context.get_arg(2)
+
+    grid_layout = GridLayout(rows=grid_rows, columns=grid_columns)
+    
+    app_instance = apps.get(app_id)
+    if app_instance:
+        app_instance.layout = grid_layout
+        app_instance.view.dock(grid_layout)  # Dock the grid to the app's view
+        return id(grid_layout)
+
+
+def native_add_widget_to_grid_layout(native_context):
+    app_id = native_context.get_arg(0)
+    widget_id = native_context.get_arg(1)
+    grid_position = native_context.get_arg(2)  # e.g., (row, column)
+
+    app_instance = apps.get(app_id)
+    if app_instance and hasattr(app_instance, 'layout'):
+        for widget in app_instance.widgets:
+            if widget.id == widget_id:
+                app_instance.layout.add_widget(widget, grid_position)
 
 def native_add_button(native_context):
     app_id = native_context.get_arg(0)
@@ -713,7 +739,9 @@ native_functions_list = {
     "add_binding": native_add_binding,
     "log": native_log,
     "get_text_from_text_area": get_text_from_text_area,
-    "exit_app": native_exit_app
+    "exit_app": native_exit_app,
+    "add_grid_layout": native_add_grid_layout,
+    "add_widget_to_grid_layout": native_add_widget_to_grid_layout
 
 }
 
