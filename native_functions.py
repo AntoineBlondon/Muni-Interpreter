@@ -438,7 +438,7 @@ def native_create_app(native_context):
                 try:
                     await self.view.dock(widget)
                 except Exception as e:
-                    print(e)
+                    logging.debug(e)
 
 
         def on_key(self, event: events.Key):
