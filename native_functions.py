@@ -414,11 +414,8 @@ def native_create_app(native_context):
             """Called to add widgets to the app."""
             yield Header()
             yield Footer()
-            if hasattr(self, 'layout'):
-                yield self.layout
-            else:
-                for widget in self.widgets:
-                    yield widget
+            for widget in self.widgets:
+                yield widget
 
         def do_action(self, key):
             action_callable = self.actions[key]
