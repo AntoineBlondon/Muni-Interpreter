@@ -2,6 +2,7 @@ import os
 from copy import deepcopy
 from rich import print as rprint
 from rich.console import Console
+from rich.text import Text
 import random
 import readline
 import time
@@ -463,8 +464,7 @@ def native_add_timer(native_context):
 
         def render(self):
             # Ensure proper renderable is returned
-            return f"Time Left: {self.time_left}"
-
+             return Text(f"Time Left: {self.time_left}")
     app_id = native_context.get_arg(0)
     app_instance = apps.get(app_id)
     if app_instance:
