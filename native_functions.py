@@ -450,11 +450,10 @@ def native_create_app(native_context):
 def native_add_timer(native_context):
     class TimerWidget(TWidget):
         # Reactive variable to update the display
-        time_left = Reactive(60)
+        time_left = Reactive(30)
 
         def on_mount(self):
             # Start the timer with 60 seconds
-            self.watch(obj=self, attribute_name="time_left", callback=self.refresh)
             self.set_timer(60)
 
         async def set_timer(self, seconds):
