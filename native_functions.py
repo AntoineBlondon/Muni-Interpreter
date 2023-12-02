@@ -429,12 +429,12 @@ def native_create_app(native_context):
         def action_do_nothing(self, arg):
             pass
 
-        def on_mount(self):
+        async def on_mount(self):
             # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
             for widget in self.widgets:
-                self.view.dock(widget)
+                await self.view.dock(widget)
 
         def on_key(self, event: events.Key):
             # check if the key is one of the bindings
