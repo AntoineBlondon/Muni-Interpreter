@@ -434,8 +434,6 @@ def native_create_app(native_context):
             # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
-            for widget in self.widgets:
-                await self.mount(widget)
 
 
         def on_key(self, event: events.Key):
@@ -466,7 +464,8 @@ def native_add_timer(native_context):
                 self.time_left -= 1
                 logging.debug("Time left: " + str(self.time_left))
 
-        def render(self):
+
+        async def render(self):
             logging.debug(f"Time Left: {self.time_left}")
             return Text(f"Time Left: {self.time_left}")
         
