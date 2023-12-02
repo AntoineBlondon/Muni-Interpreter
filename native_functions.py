@@ -439,7 +439,7 @@ def native_create_app(native_context):
             logging.debug("Docking widgets")
             await asyncio.sleep(2)
             for widget in self.widgets:
-                await self.view.dock(widget)
+                await self.mount(widget)
             logging.debug("Done")
 
 
@@ -483,7 +483,7 @@ def native_add_timer(native_context):
         
         # Modify the on_mount method to dock the timer widget
         async def on_mount_override():
-            await app_instance.view.dock(timer, edge="top")
+            await app_instance.mount(timer)
 
         app_instance.on_mount = on_mount_override
 
