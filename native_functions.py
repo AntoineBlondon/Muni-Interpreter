@@ -461,6 +461,7 @@ def native_add_timer(native_context):
             while self.time_left > 0:
                 await asyncio.sleep(1)
                 self.time_left -= 1
+                logging.debug("Time left: " + str(self.time_left))
 
         def render(self):
             logging.debug(f"Time Left: {self.time_left}")
