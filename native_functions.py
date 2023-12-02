@@ -580,7 +580,8 @@ def native_add_grid_layout(native_context):
     grid_rows = native_context.get_arg(1)
     grid_columns = native_context.get_arg(2)
 
-    grid_layout = GridLayout(rows=grid_rows, columns=grid_columns)
+    grid_layout = GridLayout()
+    grid_layout.set_grid(grid_rows, grid_columns)
     
     app_instance = apps.get(app_id)
     if app_instance:
