@@ -580,7 +580,7 @@ def native_create_app(native_context):
     return app_id
 
 
-def native_create_timer(native_context):
+def native_add_timer(native_context):
     class TimerWidget(Widget):
         # Reactive variable to update the display
         time_left = Reactive(0)
@@ -751,7 +751,8 @@ native_functions_list = {
     "add_binding": native_add_binding,
     "log": native_log,
     "get_text_from_text_area": get_text_from_text_area,
-    "exit_app": native_exit_app
+    "exit_app": native_exit_app,
+    "add_timer": native_add_timer,
 
 }
 
