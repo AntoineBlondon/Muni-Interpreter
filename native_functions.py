@@ -465,7 +465,7 @@ def native_add_timer(native_context):
                 logging.debug("Time left: " + str(self.time_left))
 
 
-        async def render(self):
+        def render(self):
             logging.debug(f"Time Left: {self.time_left}")
             return Text(f"Time Left: {self.time_left}")
         
