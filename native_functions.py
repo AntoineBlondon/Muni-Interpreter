@@ -571,7 +571,7 @@ def native_create_app(native_context):
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
             for a in dir(self):
                 logging.debug(a)
-                time.sleep(5)
+                time.sleep(0.5)
             
             for widget in self.widgets:
                 self.view.dock(widget, edge="top")
