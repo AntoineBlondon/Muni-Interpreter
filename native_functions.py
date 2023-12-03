@@ -427,7 +427,7 @@ def native_create_app(native_context):
         def action_do_nothing(self, arg):
             pass
 
-        async def on_mount(self):
+        def on_mount(self):
             # Dock all widgets in the widgets list
             for binding in self.BINDINGS:
                 self.bind(keys=binding.key, action="do_nothing('" + binding.key + "')", description=binding.description)
@@ -459,11 +459,8 @@ def native_add_timer(native_context):
                 logging.debug("Time left: timer update " + str(self.time_left))
                 await asyncio.sleep(1)
                 self.time_left -= 1
-                
-
 
         def render(self):
-            logging.debug(f"Time Left: render update {self.time_left}")
             return Text(f"Time Left: {self.time_left}")
         
     app_id = native_context.get_arg(0)
@@ -474,6 +471,28 @@ def native_add_timer(native_context):
 
         return timer
 
+
+def native_add_text(native_context):
+    app_id = native_context.get_arg(0)
+    text = native_context.get_arg(1)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        text_id = generate_valid_id("txt")
+        widget = Text(text, id=text_id)
+        app_instance.widgets.append(widget)
+        return text_id
+
+
+def native_set_text(native_context):
+    app_id = native_context.get_arg(0)
+    text_id = native_context.get_arg(1)
+    text = native_context.get_arg(2)
+    app_instance = apps.get(app_id)
+    
+    if app_instance:
+        for widget in app_instance.widgets:
+            if widget.id == text_id:
+                widget.text = text
 
 def native_run_app(native_context):
     app_id = native_context.get_arg(0)
