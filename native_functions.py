@@ -390,6 +390,11 @@ class Binding:
         self.action = action  # This is now a callable
         self.description = description
 
+class TextWithID(Text):
+    def __init__(self, content, text_id, *args, **kwargs):
+        super().__init__(content, *args, **kwargs)
+        self.text_id = text_id
+
 
 def native_create_app(native_context):
     class BasicApp(App):
@@ -478,7 +483,7 @@ def native_add_text(native_context):
     app_instance = apps.get(app_id)
     if app_instance:
         text_id = generate_valid_id("txt")
-        widget = Text(text, id=text_id)
+        widget = TextWithID(text, text_id)
         app_instance.widgets.append(widget)
         return text_id
 
@@ -486,13 +491,14 @@ def native_add_text(native_context):
 def native_set_text(native_context):
     app_id = native_context.get_arg(0)
     text_id = native_context.get_arg(1)
-    text = native_context.get_arg(2)
+    new_text_content = native_context.get_arg(2)
+
     app_instance = apps.get(app_id)
     
     if app_instance:
         for widget in app_instance.widgets:
-            if widget.id == text_id:
-                widget.text = text
+            if isinstance(widget, TextWithID) and widget.text_id == text_id:
+                widget.update(new_text_content)
 
 def native_run_app(native_context):
     app_id = native_context.get_arg(0)
