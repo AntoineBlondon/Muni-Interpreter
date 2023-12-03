@@ -17,7 +17,7 @@ from textual.binding import Binding
 from textual.reactive import reactive
 from textual.widgets import Button, Footer, Header, Static, TextArea
 from textual.widget import Widget as TWidget
-from textual.widget import Label
+from textual.widgets import Label
 from textual.reactive import Reactive
 from textual.keys import Keys
 import asyncio
