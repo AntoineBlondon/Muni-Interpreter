@@ -486,6 +486,16 @@ def native_set_text(native_context):
             if widget.id == label_id:
                 widget.change_content(new_text_content)
 
+def native_get_text(native_context):
+    app_id = native_context.get_arg(0)
+    label_id = native_context.get_arg(1)
+    app_instance = apps.get(app_id)
+    
+    if app_instance:
+        for widget in app_instance.widgets:
+            if widget.id == label_id:
+                return widget.content
+
 def native_run_app(native_context):
     app_id = native_context.get_arg(0)
     app_instance = apps.get(app_id)
@@ -617,7 +627,8 @@ native_functions_list = {
     "get_text_from_text_area": get_text_from_text_area,
     "exit_app": native_exit_app,
     "add_text": native_add_text,
-    "set_text": native_set_text
+    "set_text": native_set_text,
+    "get_text": native_get_text,
 
 }
 
