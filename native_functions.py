@@ -472,6 +472,7 @@ def native_set_text(native_context):
     if app_instance:
         for widget in app_instance.widgets:
             if widget.id == text_id:
+                logging.debug("hello")
                 widget.text = new_text_content
                 app_instance.refresh()
 
