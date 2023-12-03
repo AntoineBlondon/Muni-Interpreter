@@ -498,7 +498,7 @@ def native_set_text(native_context):
     if app_instance:
         for widget in app_instance.widgets:
             if isinstance(widget, TextWithID) and widget.text_id == text_id:
-                widget.update(new_text_content)
+                widget.text = new_text_content
 
 def native_run_app(native_context):
     app_id = native_context.get_arg(0)
