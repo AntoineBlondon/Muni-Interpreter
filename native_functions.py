@@ -464,15 +464,16 @@ def native_add_text(native_context):
 
 def native_set_text(native_context):
     app_id = native_context.get_arg(0)
-    text_id = native_context.get_arg(1)
+    label_id = native_context.get_arg(1)
     new_text_content = native_context.get_arg(2)
 
     app_instance = apps.get(app_id)
     
     if app_instance:
         for widget in app_instance.widgets:
-            if widget.id == text_id:
+            if widget.id == label_id:
                 logging.debug("hello")
+                time.sleep(1)
                 widget.text = new_text_content
                 app_instance.refresh()
 
