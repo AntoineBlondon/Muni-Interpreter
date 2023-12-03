@@ -450,33 +450,6 @@ def native_create_app(native_context):
     
     return app_id
 
-def native_add_timer(native_context):
-    class TimerWidget(TWidget):
-        # Reactive variable to update the display
-        time_left = Reactive(30)
-
-        def on_mount(self):
-            # Start the timer with 60 seconds
-            self.set_timer(60)
-
-        async def set_timer(self, seconds):
-            self.time_left = seconds
-            while self.time_left > 0:
-                logging.debug("Time left: timer update " + str(self.time_left))
-                await asyncio.sleep(1)
-                self.time_left -= 1
-
-        def render(self):
-            return Text(f"Time Left: {self.time_left}")
-        
-    app_id = native_context.get_arg(0)
-    app_instance = apps.get(app_id)
-    if app_instance:
-        timer = TimerWidget()
-        app_instance.widgets.append(timer)
-
-        return timer
-
 
 def native_add_text(native_context):
     app_id = native_context.get_arg(0)
@@ -631,7 +604,6 @@ native_functions_list = {
     "log": native_log,
     "get_text_from_text_area": get_text_from_text_area,
     "exit_app": native_exit_app,
-    "add_timer": native_add_timer,
     "add_text": native_add_text,
     "set_text": native_set_text
 
