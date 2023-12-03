@@ -456,7 +456,20 @@ def native_create_app(native_context):
             for binding in self.BINDINGS:
                 if binding.key == event.key:
                     self.do_action(event.key)
-            
+        async def add_task_timer(self, task_func, interval):
+            """
+            Add a task that runs 'task_func' every 'interval' seconds.
+            """
+            async def timer_task():
+                while True:
+                    await asyncio.sleep(interval)
+                    await task_func()
+
+            task = asyncio.create_task(timer_task())
+            # You can store 'task' in a list if you want to keep track of it
+            # for later cancellation or reference.
+            return task
+                
     app_id = id(BasicApp)  # Use the ID of the class as a unique reference
     apps[app_id] = BasicApp()
     
@@ -526,6 +539,29 @@ def native_set_button_text(native_context):
             if widget.id == button_id:
                 widget.label = button_text
         
+
+def native_add_task_timer(native_context):
+    app_id = native_context.get_arg(0)
+    function_name = native_context.get_arg(1)
+    variables_name = native_context.get_arg(2)
+    
+    interval = native_context.get_arg(3)
+
+    variables = []
+    for variable in variables_name.split(","):
+        variables.append(("identifier", variable))
+
+    app_instance = apps.get(app_id)
+    if app_instance:
+        app_instance.add_task_timer(lambda: call_function(function_name, variables, native_context.run_ast, native_context.symbol_table, native_context.context), interval)
+        
+
+def native_cancel_task_timer(native_context):
+    app_id = native_context.get_arg(0)
+    task = native_context.get_arg(1)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        task.cancel()
 
 
 def native_add_text_area(native_context):
@@ -629,6 +665,8 @@ native_functions_list = {
     "add_text": native_add_text,
     "set_text": native_set_text,
     "get_text": native_get_text,
+    "cancel_task_timer": native_cancel_task_timer,
+    "add_task_timer": native_add_task_timer
 
 }
 
