@@ -625,6 +625,8 @@ native_functions_list = {
     "get_text_from_text_area": get_text_from_text_area,
     "exit_app": native_exit_app,
     "add_timer": native_add_timer,
+    "add_text": native_add_text,
+    "set_text": native_set_text
 
 }
 
