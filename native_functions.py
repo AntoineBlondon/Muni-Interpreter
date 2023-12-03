@@ -400,10 +400,13 @@ class RLabel(Label):
     def __init__(self, content, *args, **kwargs):
         super().__init__(content, *args, **kwargs)
         self.content = content
-        def change_content(self, new_content):
-            self.content = new_content
-        def render(self):
-            return self.content
+
+    def change_content(self, new_content):
+        self.content = new_content
+        self.refresh()  # Add this line to refresh the widget
+
+    def render(self):
+        return Text(self.content)  # Use Text to properly format the content
 
 
 def native_create_app(native_context):
