@@ -396,6 +396,15 @@ class TextWithID(Text):
         super().__init__(content, *args, **kwargs)
         self.text_id = text_id
 
+class RLabel(Label):
+    def __init__(self, content, *args, **kwargs):
+        super().__init__(content, *args, **kwargs)
+        self.content = content
+        def change_content(self, new_content):
+            self.content = new_content
+        def render(self):
+            return self.content
+
 
 def native_create_app(native_context):
     class BasicApp(App):
@@ -457,7 +466,7 @@ def native_add_text(native_context):
     app_instance = apps.get(app_id)
     if app_instance:
         text_id = generate_valid_id("txt")
-        widget = Label(text, id=text_id)
+        widget = RLabel(text, id=text_id)
         app_instance.widgets.append(widget)
         return text_id
 
@@ -472,10 +481,7 @@ def native_set_text(native_context):
     if app_instance:
         for widget in app_instance.widgets:
             if widget.id == label_id:
-                logging.debug("hello")
-                time.sleep(1)
-                widget.text = new_text_content
-                app_instance.refresh()
+                widget.change_content(new_text_content)
 
 def native_run_app(native_context):
     app_id = native_context.get_arg(0)
