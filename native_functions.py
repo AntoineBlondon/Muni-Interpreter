@@ -533,7 +533,7 @@ def native_get_button_text(native_context):
     if app_instance:
         for widget in app_instance.widgets:
             if widget.id == button_id:
-                return widget.label
+                return str(widget.label)
 
 def native_add_text_area(native_context):
     app_id = native_context.get_arg(0)
