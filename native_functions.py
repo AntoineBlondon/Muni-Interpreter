@@ -525,7 +525,15 @@ def native_set_button_text(native_context):
             if widget.id == button_id:
                 widget.label = button_text
         
-
+def native_get_button_text(native_context):
+    app_id = native_context.get_arg(0)
+    button_id = native_context.get_arg(1)
+    app_instance = apps.get(app_id)
+    
+    if app_instance:
+        for widget in app_instance.widgets:
+            if widget.id == button_id:
+                return widget.label
 
 def native_add_text_area(native_context):
     app_id = native_context.get_arg(0)
@@ -619,6 +627,7 @@ native_functions_list = {
     "create_app": native_create_app,
     "run_app": native_run_app,
     "set_button_text": native_set_button_text,
+    "get_button_text": native_get_button_text,
     "add_button": native_add_button,
     "add_text_area": native_add_text_area,
     "add_binding": native_add_binding,
