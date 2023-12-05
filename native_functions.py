@@ -20,7 +20,6 @@ from textual.widget import Widget as TWidget
 from textual.widgets import Label
 from textual.reactive import Reactive
 from textual.keys import Keys
-import asyncio
 import logging
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
@@ -456,19 +455,6 @@ def native_create_app(native_context):
             for binding in self.BINDINGS:
                 if binding.key == event.key:
                     self.do_action(event.key)
-        async def add_task_timer(self, task_func, interval):
-            """
-            Add a task that runs 'task_func' every 'interval' seconds.
-            """
-            async def timer_task():
-                while True:
-                    await asyncio.sleep(interval)
-                    await task_func()
-
-            task = asyncio.create_task(timer_task())
-            # You can store 'task' in a list if you want to keep track of it
-            # for later cancellation or reference.
-            return task
                 
     app_id = id(BasicApp)  # Use the ID of the class as a unique reference
     apps[app_id] = BasicApp()
