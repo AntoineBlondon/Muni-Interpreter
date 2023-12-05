@@ -575,10 +575,8 @@ def native_add_binding(native_context):
         
 
 def native_type(native_context):
-    app_id = native_context.get_arg(0)
-    app_instance = apps.get(app_id)
-    if app_instance:
-        return type(app_instance)
+    element = native_context.get_arg(0)
+    return type(element)
 
 
 def native_exit_app(native_context):
