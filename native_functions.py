@@ -574,6 +574,11 @@ def native_add_binding(native_context):
         app_instance.actions[binding.key] = lambda: call_function(function_name, variables, native_context.run_ast, native_context.symbol_table, native_context.context)
         
 
+def native_type(native_context):
+    app_id = native_context.get_arg(0)
+    app_instance = apps.get(app_id)
+    if app_instance:
+        return type(app_instance)
 
 
 def native_exit_app(native_context):
@@ -637,6 +642,7 @@ native_functions_list = {
     "add_text": native_add_text,
     "set_text": native_set_text,
     "get_text": native_get_text,
+    "type": native_type
 
 }
 
