@@ -526,29 +526,6 @@ def native_set_button_text(native_context):
                 widget.label = button_text
         
 
-def native_add_task_timer(native_context):
-    app_id = native_context.get_arg(0)
-    function_name = native_context.get_arg(1)
-    variables_name = native_context.get_arg(2)
-    
-    interval = native_context.get_arg(3)
-
-    variables = []
-    for variable in variables_name.split(","):
-        variables.append(("identifier", variable))
-
-    app_instance = apps.get(app_id)
-    if app_instance:
-        app_instance.add_task_timer(lambda: call_function(function_name, variables, native_context.run_ast, native_context.symbol_table, native_context.context), interval)
-        
-
-def native_cancel_task_timer(native_context):
-    app_id = native_context.get_arg(0)
-    task = native_context.get_arg(1)
-    app_instance = apps.get(app_id)
-    if app_instance:
-        task.cancel()
-
 
 def native_add_text_area(native_context):
     app_id = native_context.get_arg(0)
@@ -651,8 +628,6 @@ native_functions_list = {
     "add_text": native_add_text,
     "set_text": native_set_text,
     "get_text": native_get_text,
-    "cancel_task_timer": native_cancel_task_timer,
-    "add_task_timer": native_add_task_timer
 
 }
 
