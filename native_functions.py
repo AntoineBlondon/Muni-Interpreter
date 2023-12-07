@@ -139,6 +139,11 @@ def native_sorted(native_context):
 
     return sorted(basic_list, key=lambda x: d[x])
 
+def native_shuffle(native_context):
+    basic_list = native_context.get_arg(0)
+    random.shuffle(basic_list)
+    return basic_list
+
 def native_split(native_context):
     if(len(native_context.get_args()) == 1):
         l = []
@@ -594,6 +599,7 @@ native_functions_list = {
     'get_files': native_get_files,
     'length': native_length,
     'sorted': native_sorted,
+    'shuffle': native_shuffle,
     'split': native_split,
     'strip': native_strip,
     'create_directory': native_mkdir,
