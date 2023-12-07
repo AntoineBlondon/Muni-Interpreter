@@ -7,8 +7,6 @@ Muni is a custom programming language designed to provide a simple yet powerful 
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -20,20 +18,7 @@ Muni is a custom programming language designed to provide a simple yet powerful 
 
 ## Installation
 
-> Note: An installer will be added later to avoid a mess when installing.
-
-To manually install the Muni interpreter, clone the repository and navigate to its directory:
-
-```bash
-git clone https://github.com/AntoineBlondon/Muni-Interpreter.git
-cd Mun-Interpreter
-```
-
-Then, run the following command to install the required dependencies:
-
-```bash
-pip install -r requirements.txt
-```
+> Note: I will create an installer later to avoid a mess.
 
 ## Usage
 
