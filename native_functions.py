@@ -614,6 +614,27 @@ def native_http_get(native_context):
     except requests.RequestException as e:
         # Handling any request errors
         return [("error", str(e))]
+    
+
+
+def native_tuple_to_list(native_context):
+    tuple_arg = native_context.get_arg(0)
+
+    # Convert the tuple to a list
+    if isinstance(tuple_arg, tuple):
+        return list(tuple_arg)
+    else:
+        return []  # Return an empty list if the argument is not a tuple
+
+
+def native_dict_to_list(native_context):
+    dict_arg = native_context.get_arg(0)
+
+    # Convert the dictionary to a list of key-value pairs (tuples)
+    if isinstance(dict_arg, dict):
+        return list(dict_arg.items())
+    else:
+        return []
 
 native_functions_list = {
     'print': native_print,
@@ -671,7 +692,9 @@ native_functions_list = {
     "set_text": native_set_text,
     "get_text": native_get_text,
     "type": native_type,
-    "http_get": native_http_get
+    "http_get": native_http_get,
+    "tuple_to_list": native_tuple_to_list,
+    "dict_to_list": native_dict_to_list
 
 }
 
