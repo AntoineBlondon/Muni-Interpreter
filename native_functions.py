@@ -595,14 +595,19 @@ def native_exit_app(native_context):
 def native_http_get(native_context):
     # Extracting the URL and headers from the arguments
     url = native_context.get_arg(0)
-    headers_arg = native_context.get_arg(1)
-
-    # Convert headers from list of tuples to a dictionary
+    headers = {}
+    if len(native_context.get_args()) > 1:
+        headers_arg = native_context.get_arg(1)
     headers = {header[0]: header[1] for header in headers_arg}
+    
+    params = {}
+    if len(native_context.get_args()) > 2:
+        params_arg = native_context.get_arg(2)
+    params = {param[0]: param[1] for param in params_arg}
 
     try:
         # Making the GET request
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, params=params)
         
         # Returning the response content and status code as a list of tuples
         return [("status_code", response.status_code), ("content", response.text)]
