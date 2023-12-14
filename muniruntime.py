@@ -462,7 +462,7 @@ def cast(value, type_to_cast):
             return int(value)
         elif type_to_cast == 'bool':
             return bool(value)
-        elif type_to_cast == 'str':
+        elif type_to_cast == 'string':
             return str(value)
         elif type_to_cast == 'float':
             return float(value)

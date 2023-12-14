@@ -190,12 +190,15 @@ def p_type_specifier(p):
     '''type_specifier : INT
                      | FLOAT
                      | BOOL
-                     | STR
+                     | STRING
                      | UNTYPED
                      | VOID
+                     | LIST
                      | LIST LT type_specifier GT'''
     if len(p) == 5:
         p[0] = f"LIST<{p[3]}>"
+    elif p[1] == 'LIST':
+        p[0] = f'LIST<VOID>'
     else:
         p[0] = keywords.get(p[1], p[1])
 

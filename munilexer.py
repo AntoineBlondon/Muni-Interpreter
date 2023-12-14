@@ -6,7 +6,7 @@ from ply import lex
 keywords = {
     'int': 'INT',       # For declaring integer variables
     'float': 'FLOAT',   # For declaring float variables
-    'string': 'STR', # For declaring string variables
+    'string': 'STRING', # For declaring string variables
     'boolean': 'BOOL',     # For declaring boolean variables
     'void': 'VOID',       # For declaring void variables
     'list': 'LIST',     # For list data type
