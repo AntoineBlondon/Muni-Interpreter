@@ -190,7 +190,7 @@ def p_type_specifier(p):
     '''type_specifier : INT
                      | FLOAT
                      | BOOL
-                     | STRING
+                     | STR
                      | UNTYPED
                      | VOID
                      | LIST
