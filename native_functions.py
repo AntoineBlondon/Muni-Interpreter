@@ -598,12 +598,12 @@ def native_http_get(native_context):
     headers = {}
     if len(native_context.get_args()) > 1:
         headers_arg = native_context.get_arg(1)
-    headers = {header[0]: header[1] for header in headers_arg}
+        headers = {header[0]: header[1] for header in headers_arg}
     
     params = {}
     if len(native_context.get_args()) > 2:
         params_arg = native_context.get_arg(2)
-    params = {param[0]: param[1] for param in params_arg}
+        params = {param[0]: param[1] for param in params_arg}
 
     try:
         # Making the GET request
