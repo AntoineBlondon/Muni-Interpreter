@@ -22,6 +22,7 @@ from textual.widgets import Label
 from textual.reactive import Reactive
 from textual.keys import Keys
 import logging
+import ast
 
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
@@ -636,13 +637,17 @@ def native_dict_to_list(native_context):
     else:
         return []
 
-def native_string_to_list(native_context):
-    string_arg = native_context.get_arg(0)
+def native_string_repr_to_list(native_context):
+    string_repr_arg = native_context.get_arg(0)
 
-    # Convert the string to a list of characters
-    if isinstance(string_arg, str):
-        return list(string_arg)
-    else:
+    # Convert the string representation of a list to an actual list
+    try:
+        if isinstance(string_repr_arg, str):
+            return ast.literal_eval(string_repr_arg)
+        else:
+            return []  # Return an empty list if the argument is not a string
+    except (ValueError, SyntaxError):
+        # Handle the case where the string is not a valid list representation
         return []
 
 native_functions_list = {
@@ -704,7 +709,7 @@ native_functions_list = {
     "http_get": native_http_get,
     "tuple_to_list": native_tuple_to_list,
     "dict_to_list": native_dict_to_list,
-    "string_to_list": native_string_to_list
+    "string_repr_to_list": native_string_repr_to_list
     
 
 }
