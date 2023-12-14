@@ -636,6 +636,15 @@ def native_dict_to_list(native_context):
     else:
         return []
 
+def native_string_to_list(native_context):
+    string_arg = native_context.get_arg(0)
+
+    # Convert the string to a list of characters
+    if isinstance(string_arg, str):
+        return list(string_arg)
+    else:
+        return []
+
 native_functions_list = {
     'print': native_print,
     'printlocal': native_print_local,
@@ -694,7 +703,9 @@ native_functions_list = {
     "type": native_type,
     "http_get": native_http_get,
     "tuple_to_list": native_tuple_to_list,
-    "dict_to_list": native_dict_to_list
+    "dict_to_list": native_dict_to_list,
+    "string_to_list": native_string_to_list
+    
 
 }
 
