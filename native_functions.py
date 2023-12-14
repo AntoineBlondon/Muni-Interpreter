@@ -5,6 +5,7 @@ from rich.console import Console
 from rich.text import Text
 import random
 import readline
+import requests
 import time
 import subprocess
 import json
@@ -591,6 +592,24 @@ def native_exit_app(native_context):
         app_instance.exit()
 
 
+def native_http_get(native_context):
+    # Extracting the URL and headers from the arguments
+    url = native_context.get_arg(0)
+    headers_arg = native_context.get_arg(1)
+
+    # Convert headers from list of tuples to a dictionary
+    headers = {header[0]: header[1] for header in headers_arg}
+
+    try:
+        # Making the GET request
+        response = requests.get(url, headers=headers)
+        
+        # Returning the response content and status code as a list of tuples
+        return [("status_code", response.status_code), ("content", response.text)]
+    except requests.RequestException as e:
+        # Handling any request errors
+        return [("error", str(e))]
+
 native_functions_list = {
     'print': native_print,
     'printlocal': native_print_local,
@@ -646,7 +665,8 @@ native_functions_list = {
     "add_text": native_add_text,
     "set_text": native_set_text,
     "get_text": native_get_text,
-    "type": native_type
+    "type": native_type,
+    "http_get": native_http_get
 
 }
 
