@@ -466,6 +466,8 @@ def cast(value, type_to_cast):
             return str(value)
         elif type_to_cast == 'float':
             return float(value)
+        elif type_to_cast == 'list':
+            return list(value)
         else:
             raise ValueError(f"Unsupported type to cast: {type_to_cast}")
     except (ValueError, TypeError):
