@@ -111,7 +111,7 @@ import <math:py> # imports the python math module
 
 say_hello(); # Displays "hi"
 
-print(sqrt(25)) # -> 5.0
+print(sqrt(25)); # -> 5.0
 
 ```
 
