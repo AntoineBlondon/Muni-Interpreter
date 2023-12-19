@@ -32,6 +32,14 @@ To run a Muni script:
 mun your_script.mun
 ```
 
+## Updating
+
+To update the interpreter:
+
+```bash
+mun --update
+```
+
 ## Documentation
 
 For detailed documentation on the Muni language syntax and features, refer to the [Docs](docs/) directory in this repository.
