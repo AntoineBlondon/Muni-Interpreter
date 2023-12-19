@@ -692,19 +692,19 @@ native_functions_list = {
     "read_value": native_read_value,
     "get_ran_location": native_get_ran_location,
     "get_base_location": native_get_base_location,
-    "create_app": native_create_app,
-    "run_app": native_run_app,
-    "set_button_text": native_set_button_text,
-    "get_button_text": native_get_button_text,
-    "add_button": native_add_button,
-    "add_text_area": native_add_text_area,
-    "add_binding": native_add_binding,
+    "create_app": native_create_app, #
+    "run_app": native_run_app, #
+    "set_button_text": native_set_button_text, #
+    "get_button_text": native_get_button_text, #
+    "add_button": native_add_button, #
+    "add_text_area": native_add_text_area, #
+    "add_binding": native_add_binding, #
     "log": native_log,
-    "get_text_from_text_area": get_text_from_text_area,
-    "exit_app": native_exit_app,
-    "add_text": native_add_text,
-    "set_text": native_set_text,
-    "get_text": native_get_text,
+    "get_text_from_text_area": get_text_from_text_area, #
+    "exit_app": native_exit_app, #
+    "add_text": native_add_text, #
+    "set_text": native_set_text, #
+    "get_text": native_get_text, #
     "type": native_type,
     "http_get": native_http_get,
     "tuple_to_list": native_tuple_to_list,

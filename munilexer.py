@@ -6,24 +6,24 @@ from ply import lex
 keywords = {
     'int': 'INT',       # For declaring integer variables
     'float': 'FLOAT',   # For declaring float variables
-    'string': 'STR', # For declaring string variables
-    'boolean': 'BOOL',     # For declaring boolean variables
-    'void': 'VOID',       # For declaring void variables
+    'string': 'STR',    # For declaring string variables
+    'boolean': 'BOOL',  # For declaring boolean variables
+    'void': 'VOID',     # For declaring void variables
     'list': 'LIST',     # For list data type
-    #'dict': 'DICT',     # For dictionary data type
+    'dict': 'DICT',     # For dictionary data type
     'for': 'FOR',       # For 'for' loops
     'while': 'WHILE',   # For 'while' loops
     'if': 'IF',         # For 'if' statements
     'else': 'ELSE',     # For 'else' statements
     'switch': 'SWITCH', # For 'switch' statements
     'case': 'CASE',     # For 'case' in switch statements
-    'default': 'DEFAULT', # For 'default' in switch statements
+    'default': 'DEFAULT',#For 'default' in switch statements
     'break': 'BREAK',   # For breaking out of loops or switch statements
-    #'try': 'TRY',       # For 'try' in exception handling
-    #'catch': 'CATCH',   # For 'catch' in exception handling
+    'try': 'TRY',       # For 'try' in exception handling
+    'catch': 'CATCH',   # For 'catch' in exception handling
     'import': 'IMPORT', # For importing modules
     'as': 'AS',         # For aliasing in imports
-    'return': 'RETURN',  # For returning values from functions
+    'return': 'RETURN', # For returning values from functions
     'true': 'TRUE',     # For declaring boolean variables
     'false': 'FALSE',   # For declaring boolean variables 
     'in': 'IN', 
@@ -36,7 +36,6 @@ tokens = [
     'EQUALS', 'PLUS', 'MINUS', 'MUL', 'DIV', 'GT', 'LT', 'GE', 'LE', 'EQ', 'NE', 'COLON', 'PLUSEQ', 'MINUSEQ', 'MULEQ', 'DIVEQ',
     'LARROW', 'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET', 'AT',
-    #'TERNARY_QUESTION', 'TERNARY_COLON',
     
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'PIPE',
