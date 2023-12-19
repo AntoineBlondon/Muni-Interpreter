@@ -52,7 +52,6 @@ You should see "Hello, World!" printed in the console.
 
 ## Getting Help
 - **Documentation:** Refer to the [Muni documentation](README.md) for detailed guides and references.
-- **Community:** Join the Muni community on [forums or social media platforms] for support and discussions.
-- **Issues:** If you encounter any issues or have suggestions, please report them on the [GitHub issues page](https://github.com/your-github/muni-lang/issues).
+- **Issues:** If you encounter any issues or have suggestions, please report them on the [GitHub issues page](https://github.com/AntoineBlondon/Muni-Interpreter/issues).
 
 Congratulations on running your first Muni script! You're now ready to explore the world of Muni programming. Happy coding!
