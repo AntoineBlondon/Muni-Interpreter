@@ -82,7 +82,7 @@ Signals are a unique feature in Muni for event-driven programming. Signals can b
 signal mySignal; # Declares a signal 
 
 when (mySignal) {
-    # Code to execute when mySignal is emitted
+    # Code to execute when mySignal is emitted (Gets executed in a new thread)
 }
 
 
