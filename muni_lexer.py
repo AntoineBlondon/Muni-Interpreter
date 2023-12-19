@@ -1,18 +1,21 @@
 from ply import lex
-    
+from muni_types import *
 
 
 # Dictionary of keywords
 keywords = {
     'int': 'INT',       # For declaring integer variables
+    'based': 'BASED',   # For declaring based number variables
+    'complex': 'COMPLEX', # For declaring complex number variables
     'float': 'FLOAT',   # For declaring float variables
-    'string': 'STR', # For declaring string variables
-    'boolean': 'BOOL',     # For declaring boolean variables
+    'string': 'STRING', # For declaring string variables
+    'boolean': 'BOOLEAN',     # For declaring boolean variables
     'void': 'VOID',       # For declaring void variables
     'list': 'LIST',     # For list data type
-    #'dict': 'DICT',     # For dictionary data type
+    'dict': 'DICT',     # For dictionary data type
     'for': 'FOR',       # For 'for' loops
     'while': 'WHILE',   # For 'while' loops
+    'until': 'UNTIL',   # For 'until' loops
     'if': 'IF',         # For 'if' statements
     'else': 'ELSE',     # For 'else' statements
     'switch': 'SWITCH', # For 'switch' statements
@@ -24,24 +27,29 @@ keywords = {
     'import': 'IMPORT', # For importing modules
     'as': 'AS',         # For aliasing in imports
     'return': 'RETURN',  # For returning values from functions
-    'true': 'TRUE',     # For declaring boolean variables
-    'false': 'FALSE',   # For declaring boolean variables 
     'in': 'IN', 
+    'signal': 'SIGNAL',
+    'emit': 'EMIT',
+    'watch': 'WATCH',
+    'when': 'WHEN',
+
 }
 
 tokens = [
     
     'IDENTIFIER',
     
-    'EQUALS', 'PLUS', 'MINUS', 'MUL', 'DIV', 'GT', 'LT', 'GE', 'LE', 'EQ', 'NE', 'COLON', 'PLUSEQ', 'MINUSEQ', 'MULEQ', 'DIVEQ',
-    'LARROW', 'RARROW',
+    'EQUALS', 'PLUS', 'MINUS', 'MUL', 'DIV', 'GT', 'LT', 'GE', 'LE', 'EQ', 'NE', 'COLON', 'PLUSEQ', 'MINUSEQ', 'MULEQ', 'DIVEQ', 'MODEQ',
+    'MODULUS',
+    #'LARROW', 
+    'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET', 'AT',
-    #'TERNARY_QUESTION', 'TERNARY_COLON',
     
+
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'PIPE',
     'EXCLAMATION', 'AMPERSAND', 'HAT',
-    'INTEGER_LITERAL', 'STRING_LITERAL', 'FLOAT_LITERAL',
+    'NUMBER', 'IMAGINARY_NUMBER', 'BASED_NUMBER', 'STRING_LITERAL', 'IMPORT_LITERAL',
 ] + list(keywords.values())
 
 
@@ -56,13 +64,14 @@ t_PLUSEQ = r'\+='
 t_MINUSEQ = r'-='
 t_MULEQ = r'\*='
 t_DIVEQ = r'/='
-
+t_MODULUS = r'%'
+t_MODEQ = r'%='
 
 # Delimiter tokens
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 
-t_LARROW = r'<-'
+#t_LARROW = r'<-'
 t_RARROW = r'->'
 
 
@@ -93,33 +102,52 @@ t_AT = r'@'
 
 
 # Boolean values
-def t_TRUE(t):
-    r'true'
-    t.type = 'TRUE'  # Set the type to 'TRUE'
-    t.value = True   # Set the value to Python's True
+def t_BOOLEAN(t):
+    r'true|false'
+    t.value = Muni_Boolean(t.value == 'true')
     return t
 
-def t_FALSE(t):
-    r'false'
-    t.type = 'FALSE'  # Set the type to 'FALSE'
-    t.value = False   # Set the value to Python's False
+def t_BASED_NUMBER(t):
+    r'-?\d+@[\da-zA-Z]+'
+    base, value = t.value.split('@')
+    t.value = Muni_BasedNumber(value, int(base))
+    return t
+
+def t_IMAGINARY_NUMBER(t):
+    r'-?\d+(\.\d+)?[jJ]|-?[jJ]'
+    # Extract the numerical part and create an imaginary number representation
+    if len(t.value) == 1:
+        t.value = Muni_Complex(0,1)
+        return t
+    if len(t.value) == 2 and t.value.startswith('-'):  # For cases like "-j"
+        t.value = Muni_Complex(0, -1)
+        return t
+    num_part = t.value[:-1]  # Remove the 'j'
+    t.value = Muni_Complex(0,float(num_part))  # Assuming Muni_Imaginary is a class to handle imaginary numbers
     return t
 
 # Literals
-def t_FLOAT_LITERAL(t):
-    r'\d+\.\d+'
-    t.value = float(t.value)
+def t_NUMBER(t):
+    r'-?\d+(\.\d+)?([eE][-+]?\d+)?'
+    if '.' in t.value or 'e' in t.value or 'E' in t.value:
+        t.value = Muni_Float(float(t.value))
+    else:
+        t.value = Muni_Int(int(t.value))
     return t
-def t_INTEGER_LITERAL(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
+
+
 
 
 
 def t_STRING_LITERAL(t):
     r'"[^"]*"'
     t.value = t.value[1:-1]  # Remove the quotes
+    t.value = Muni_String(t.value)
+    return t
+
+def t_IMPORT_LITERAL(t):
+    r'<[a-zA-Z0-9_.:]+>'
+    t.value = t.value[1:-1]  # Remove the < and >
     return t
 
 # Identifier and keyword matching
@@ -154,4 +182,3 @@ def t_error(t):
     t.lexer.skip(1)
 
 lexer = lex.lex()
-
