@@ -15,7 +15,7 @@ Muni is a modern, statically & dynamically typed programming language designed f
 
 ## Installation
 
-Clone the repository:
+Clone the repository, then move the mun file to bin:
 
 ```bash
 git clone https://github.com/AntoineBlondon/Muni-Interpreter.git
