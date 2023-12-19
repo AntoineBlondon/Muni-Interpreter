@@ -19,7 +19,9 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/AntoineBlondon/Muni-Interpreter.git
-cd Muni-Interpreter
+cd Muni-Interpreter/scripts
+chmod +x mun
+mv mun /usr/local/bin/
 ```
 
 ## Usage
@@ -27,7 +29,7 @@ cd Muni-Interpreter
 To run a Muni script:
 
 ```bash
-python run.py your_script.mun
+mun your_script.mun
 ```
 
 ## Documentation
@@ -36,12 +38,8 @@ For detailed documentation on the Muni language syntax and features, refer to th
 
 ## Contributing
 
-Contributions to the Muni language interpreter are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
+Contributions to the Muni language interpreter are welcome. Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines on how to contribute.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors who have helped in building and improving the Muni language interpreter.
+This project is licensed under the MIT License - see the [LICENSE](docs/LICENSE) file for details.

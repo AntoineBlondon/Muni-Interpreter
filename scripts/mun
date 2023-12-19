@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Define t  he installation directory
+INSTALL_DIR="$HOME/.mun_interpreter"
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to install or update Muni interpreter
+install_or_update_muni() {
+    if [ ! -d "$INSTALL_DIR/Muni-Interpreter/.git" ]; then
+        echo "Installing the Muni interpreter..."
+        mkdir -p "$INSTALL_DIR"
+        git clone https://github.com/AntoineBlondon/Muni-Interpreter.git "$INSTALL_DIR/Muni-Interpreter"
+    elif [ "$1" == "--update" ]; then
+        echo "Checking for updates to the Muni interpreter..."
+        cd "$INSTALL_DIR/Muni-Interpreter" || exit
+        git fetch origin main
+
+        # Check for differences
+        DIFF=$(git diff main..origin/main)
+        if [ "$DIFF" != "" ]; then
+            echo "Updates found. Applying latest changes..."
+            git reset --hard origin/main
+            git pull origin main
+        else
+            echo "No updates found. Your Muni interpreter is up to date."
+        fi
+    fi
+}
+
+# Check required commands (git, python3)
+if ! command_exists git; then
+    echo "Error: git is not installed. Please install git and try again."
+    exit 1
+fi
+
+if ! command_exists python3; then
+    echo "Error: Python 3 is not installed. Please install Python 3 and try again."
+    exit 1
+fi
+
+# Install or update based on passed arguments
+if [ "$1" == "--update" ]; then
+    install_or_update_muni "--update"
+    echo "For more information, visit https://github.com/AntoineBlondon/Muni-Interpreter/tree/main/docs."
+else
+    install_or_update_muni  
+    python3 "$INSTALL_DIR/Muni-Interpreter/run.py" "$@"
+fi
+
+# Post-installation message
