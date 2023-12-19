@@ -18,8 +18,8 @@ Muni is a modern, statically and dynamically typed programming language designed
 Clone the repository:
 
 ```bash
-git clone https://github.com/[your-github-username]/muni-language-interpreter.git
-cd muni-language-interpreter
+git clone https://github.com/AntoineBlondon/Muni-Interpreter.git
+cd Muni-Interpreter
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ cd muni-language-interpreter
 To run a Muni script:
 
 ```bash
-python muni_interpreter.py your_script.mun
+python run.py your_script.mun
 ```
 
 ## Documentation
