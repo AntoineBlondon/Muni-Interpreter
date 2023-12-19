@@ -38,6 +38,7 @@ Muni supports several data types, including:
 - Integers (`int`)
 - Floating-point numbers (`float`)
 - Complex numbers (`complex`)
+- Based numbers (`based`)
 - Booleans (`boolean`)
 - Strings (`string`)
 - Untyped (`?`)
