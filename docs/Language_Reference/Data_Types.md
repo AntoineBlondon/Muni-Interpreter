@@ -72,6 +72,6 @@ float pi = 3.14159;
 boolean isReady = false;
 string name = "Muni Language";
 based hexNumber = 16@1A;
-complex z = 2 + 3i;
+complex z = 2 + 3j;
 ? dynamicVar = "This is dynamic";
 ```
