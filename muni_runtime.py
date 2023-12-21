@@ -302,6 +302,7 @@ class Runtime:
 
         self.functions['print'] = stdlib.muni_print
         self.functions['type'] = stdlib.muni_type
+        self.functions['input'] = stdlib.muni_input
     
     def handle_import(self, module_path):
         if module_path.endswith(':py'):
