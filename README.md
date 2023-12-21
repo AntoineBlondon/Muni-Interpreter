@@ -1,5 +1,7 @@
 # Muni Language Interpreter
 
+![Muni Logo](images/muni_logo.png)
+
 ## Introduction
 
 Muni is a modern, dynamically typed programming language designed for simplicity and efficiency. This repository contains the Muni Language Interpreter, an implementation of the Muni language written in Python. Muni supports various data types, control flow statements, functions, and unique features like signal-based programming.
