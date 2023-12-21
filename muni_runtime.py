@@ -13,7 +13,7 @@ class Runtime:
         self.register_stdlib_functions()
 
     def define_function(self, func):
-        self.functions[funx.name] = func
+        self.functions[func.name] = func
 
     def push_scope(self):
         self.scopes.append({})
