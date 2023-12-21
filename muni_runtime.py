@@ -393,6 +393,8 @@ class Runtime:
                 return Muni_String(str(value.value))
             elif isinstance(value, Muni_Boolean):
                 return Muni_String(str(value.value))
+            elif isinstance(value, Muni_String):
+                return value
             try:
                 return str(value)
             except:
