@@ -44,6 +44,8 @@ tokens = [
     #'LARROW', 
     'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET', 'AT',
+
+    'LIST_LEFT', 'LIST_RIGHT',
     
 
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
@@ -53,6 +55,7 @@ tokens = [
 ] + list(keywords.values())
 
 
+t_ignore = ' \t'
 
 # Operator tokens
 t_EQUALS = r'='
@@ -169,7 +172,6 @@ def t_comment_multiline(t):
     pass  # No return value. Token discarded
 
 
-t_ignore = ' \t'
 
 # Newlines
 def t_newline(t):

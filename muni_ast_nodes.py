@@ -7,6 +7,12 @@ class AstNode:
 class StatementList(AstNode):
     def __init__(self, statements):
         self.statements = statements
+    
+    def __str__(self):
+        return "\n".join([str(statement) for statement in self.statements])
+
+    def __repr__(self):
+        return self.__str__()
 
 class BinaryOperation(AstNode):
     def __init__(self, left, operator, right):
@@ -91,6 +97,7 @@ class String(AstNode):
         return self.__str__()
 
 
+
 class Assignment(AstNode):
     def __init__(self, name, value):
         self.name = name
@@ -117,6 +124,32 @@ class Declaration(AstNode):
     def __str__(self):
         return f"Declaration(type='{self.type_specifier}', name='{self.name}', value={self.value})"
 
+
+class ListInitialization(AstNode):
+    def __init__(self, elements):
+        self.elements = elements
+    
+    def __str__(self):
+        return f"ListInitialization({self.elements})"
+
+
+class ListAccess(AstNode):
+    def __init__(self, name, index):
+        self.name = name
+        self.index = index
+
+    def __str__(self):
+        return f"ListAccess(name='{self.name}', index={self.index})"
+    
+
+class ListAssignment(AstNode):
+    def __init__(self, name, index, value):
+        self.name = name
+        self.index = index
+        self.value = value
+
+    def __str__(self):
+        return f"ListAssignment(name='{self.name}', index={self.index}, value={self.value})"
 
 class Variable(AstNode):
     def __init__(self, name):

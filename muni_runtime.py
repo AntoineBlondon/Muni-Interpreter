@@ -203,6 +203,22 @@ class Runtime:
             statements = node.statements
             self.assign_signal(signal_name, statements)
 
+        elif isinstance(node, ListInitialization):
+            values = [self.evaluate(val) for val in node.elements]
+            return Muni_List(values)
+
+        elif isinstance(node, ListAccess):
+            list_object = self.evaluate(node.name)
+            index = self.evaluate(node.index)
+            return list_object.get_item(index)
+    
+        elif isinstance(node, ListAssignment):
+            list_object = self.evaluate(node.name)
+            index = self.evaluate(node.index)
+            value = self.evaluate(node.value)
+            list_object.set_item(index, value)
+            self.define_variable(node.name, list_object, str(list_object.symbol()))
+
 
         elif node is None:
             return None
@@ -396,9 +412,13 @@ class Runtime:
             elif isinstance(value, Muni_String):
                 return value
             try:
-                return str(value)
+                return Muni_String(str(value))
             except:
                 raise Exception(f"Cannot cast {type(value)} to {to_type}")
+        elif 'list' in to_type:
+            if '<' in to_type:
+                to_type = ('list', to_type[to_type.index('<') + 1:to_type.index('>')])
+            return Muni_List(value, to_type[1])
         else:
             raise Exception(f"Cannot cast {type(value)} to {to_type}")
     def evaluate_block(self, statements):

@@ -47,8 +47,40 @@ def p_type_specifier(p):
                       | COMPLEX
                       | STRING
                       | VOID
-                      | UNTYPED'''
-    p[0] = p[1]
+                      | UNTYPED
+                      | LIST
+                      | LIST IMPORT_LITERAL'''
+    if len(p) == 3:
+        p[0] = ('list', p[2])
+    elif p[1] == 'list':
+        p[0] = ('list', 'UNTYPED')
+    else:
+        p[0] = p[1]
+
+
+def p_list_initialization(p):
+    '''expression : LBRACKET list_elements RBRACKET
+                  | LBRACKET RBRACKET'''
+    if len(p) == 4:
+        p[0] = ListInitialization(elements=p[2])
+    else:
+        p[0] = ListInitialization(elements=[])
+
+def p_list_elements(p):
+    '''list_elements : list_elements COMMA expression
+                     | expression'''
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    else:
+        p[0] = [p[1]]
+
+def p_list_access(p):
+    'expression : IDENTIFIER LBRACKET expression RBRACKET'
+    p[0] = ListAccess(name=p[1], index=p[3])
+
+def p_list_assignment(p):
+    'assignment : IDENTIFIER LBRACKET expression RBRACKET EQUALS expression'
+    p[0] = ListAssignment(name=p[1], index=p[3], value=p[6])
 
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'

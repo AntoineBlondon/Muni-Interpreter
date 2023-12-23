@@ -146,7 +146,7 @@ class Muni_Int(Muni_Type):
     def __hash__(self):
         return hash(self.value)
     
-    def symbol(self):
+    def symbol():
         return 'int'
 
 
@@ -258,7 +258,7 @@ class Muni_BasedNumber(Muni_Type):
         return hash(self.value)
     
     
-    def symbol(self):
+    def symbol():
         return 'based'
 
     # Add other methods for arithmetic, comparisons, etc.
@@ -310,7 +310,7 @@ class Muni_Complex(Muni_Type):
     def __complex__(self):
         return complex(self.real, self.imag)
 
-    def symbol(self):
+    def symbol():
         return 'complex'
 
 class Muni_Float(Muni_Type):
@@ -420,7 +420,7 @@ class Muni_Float(Muni_Type):
         return hash(self.value)
     
 
-    def symbol(self):
+    def symbol():
         return 'float'
 
 
@@ -478,7 +478,7 @@ class Muni_Boolean(Muni_Type):
         return hash(self.value)
     
     
-    def symbol(self):
+    def symbol():
         return 'boolean'
     
 
@@ -507,7 +507,7 @@ class Muni_String(Muni_Type):
     def __iter__(self):
         return iter(self.value)
     
-    def symbol(self):
+    def symbol():
         return 'string'
 
 class Muni_Void(Muni_Type):
@@ -517,30 +517,60 @@ class Muni_Void(Muni_Type):
     def __str__(self):
         return "void"
     
-    def symbol(self):
+    def symbol():
         return 'void'
 
 class Muni_Untyped(Muni_Type):
     def __init__(self):
         super().__init__(None)
 
-    def symbol(self):
+    def symbol():
         return '?'
 
 class Muni_List(Muni_Type):
     def __init__(self, items=None, type_specifier='UNTYPED'):
         super().__init__(items if items is not None else [])
         self.type_specifier = type_specifier
+        for item in items:
+            self.check_type(item)
 
     def append(self, item):
+        self.check_type(item)    
         self.value.append(item)
+        
     
     def remove(self, item):
         self.value.remove(item)
+
+    def get_item(self, index):
+        return self.value[index]
+    
+    def set_item(self, index, item):
+        self.check_type(item)
+        self.value[index] = item
+    
+    def insert(self, index, item):
+        self.check_type(item)
+        self.value.insert(index, item)
+
+    
+    
+    
+    
+    def check_type(self, item):
+        if self.type_specifier != "UNTYPED" and not isinstance(item, types[self.type_specifier]):
+            raise TypeError(f"Expected type {types[self.type_specifier]}, got {type(item)}")
+            
     
 
     def __iter__(self):
         return iter(self.value)
+    
+    def __str__(self):
+        try:
+            return f"<{types[self.type_specifier].symbol()}>[{', '.join(str(item) for item in self.value)}]"
+        except KeyError as e:
+            return f"<{self.type_specifier}>[{', '.join(str(item) for item in self.value)}]"
 
     # Add more list-specific methods like remove, get, etc.
     def symbol(self):
@@ -566,3 +596,30 @@ def int_to_base_digit(digit):
     if digit < 10:
         return str(digit)
     return chr(ord('a') + digit - 10)
+
+
+
+types = {
+    "UNTYPED": Muni_Untyped,
+    "INT": Muni_Int,
+    "FLOAT": Muni_Float,
+    "BASED": Muni_BasedNumber,
+    "COMPLEX": Muni_Complex,
+    "BOOLEAN": Muni_Boolean,
+    "STRING": Muni_String,
+    "VOID": Muni_Void,
+    "LIST": Muni_List,
+    "DICT": Muni_Dict,
+    "int": Muni_Int,
+    "float": Muni_Float,
+    "boolean": Muni_Boolean,
+    "based": Muni_BasedNumber,
+    "complex": Muni_Complex,
+    "string": Muni_String,
+    "void": Muni_Void,
+    "list": Muni_List,
+    "dict": Muni_Dict,
+    "?": Muni_Untyped
+
+
+}
