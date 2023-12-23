@@ -10,13 +10,21 @@ def run_program(ast):
     runtime = Runtime()
     if isinstance(ast, StatementList):
         for stmt in ast.statements:
+            runtime.evaluate(stmt)
+    else:
+        runtime.evaluate(ast)
+
+def run_program_with_results(ast):
+    runtime = Runtime()
+    if isinstance(ast, StatementList):
+        for stmt in ast.statements:
             yield str(runtime.evaluate(stmt))
     else:
         yield str(runtime.evaluate(ast))
 
 def run(code):
     ast = parser.parse(code)
-    return run_program(ast)
+    return run_program_with_results(ast) 
 
 def main():
     if len(sys.argv) != 2:
