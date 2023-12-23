@@ -54,7 +54,7 @@ class Muni_Int(Muni_Type):
     def __truediv__(self, other):
         if isinstance(other, Muni_Int):
             if other.value == 0:
-                raise ValueError("Division by zero")
+                raise ValueError("Error: Division by zero")
             return Muni_Float(self.value / other.value)  # Integer division
         elif isinstance(other, Muni_Float):
             return Muni_Float(self.value / other.value)
@@ -69,7 +69,7 @@ class Muni_Int(Muni_Type):
     def __floordiv__(self, other):
         if isinstance(other, Muni_Int):
             if other.value == 0:
-                raise ValueError("Division by zero")
+                raise ValueError("Error: Division by zero")
             return Muni_Int(self.value // other.value)
         elif isinstance(other, Muni_Float):
             return Muni_Int(self.value // other.value)
@@ -354,7 +354,7 @@ class Muni_Float(Muni_Type):
     def __truediv__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int)):
             if other.value == 0:
-                raise ValueError("Division by zero")
+                raise ValueError("Error: Division by zero")
             return Muni_Float(self.value / other.value)
         elif isinstance(other, Muni_BasedNumber):
             return Muni_Float(str(self.value / other.value))
@@ -365,7 +365,7 @@ class Muni_Float(Muni_Type):
     def __floordiv__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             if other.value == 0:
-                raise ValueError("Division by zero")
+                raise ValueError("Error: Division by zero")
             return Muni_Float(self.value // other.value)
         raise TypeError("Unsupported operand type for //: 'Muni_Float' and '{}'".format(type(other).__name__))
 
@@ -530,6 +530,7 @@ class Muni_Untyped(Muni_Type):
 class Muni_List(Muni_Type):
     def __init__(self, items=None, type_specifier='UNTYPED'):
         super().__init__(items if items is not None else [])
+        self.type_specifier = type_specifier
 
     def append(self, item):
         self.value.append(item)
@@ -542,6 +543,8 @@ class Muni_List(Muni_Type):
         return iter(self.value)
 
     # Add more list-specific methods like remove, get, etc.
+    def symbol(self):
+        return f'list<{self.type_specifier}>'
 
 class Muni_Dict(Muni_Type):
     def __init__(self, dict_values=None):
