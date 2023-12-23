@@ -17,7 +17,6 @@ class TestRunner:
     def run(self):
         for test in self.test_cases:
             try:
-                # Execute the code snippet
                 output = execute_code(test.input_code)
                 if test.expected_error:
                     print(f"FAIL {test.description}: Expected error, but got output.")
