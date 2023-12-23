@@ -10,9 +10,13 @@ def run_program(ast):
     runtime = Runtime()
     if isinstance(ast, StatementList):
         for stmt in ast.statements:
-            runtime.evaluate(stmt)
+            yield str(runtime.evaluate(stmt))
     else:
-        runtime.evaluate(ast)
+        yield str(runtime.evaluate(ast))
+
+def run(code):
+    ast = parser.parse(code)
+    return run_program(ast)
 
 def main():
     if len(sys.argv) != 2:
@@ -21,7 +25,7 @@ def main():
 
     file_path = sys.argv[1]
     ast = parse_file(file_path)
-    run_program(ast)
+    return run_program(ast)
 
 if __name__ == "__main__":
     main()
