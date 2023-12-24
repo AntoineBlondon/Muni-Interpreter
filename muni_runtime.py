@@ -446,7 +446,7 @@ class Runtime:
             if '<' in to_type:
                 to_type = ('list', to_type[to_type.index('<') + 1:to_type.index('>')])
             if isinstance(value, Muni_List):
-                return value
+                return Muni_List(value.value, to_type[1])
             return Muni_List(value, to_type[1])
         else:
             raise Exception(f"Cannot cast {type(value)} to {to_type}")
