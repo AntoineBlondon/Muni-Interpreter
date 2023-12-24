@@ -44,8 +44,6 @@ tokens = [
     #'LARROW', 
     'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET', 'AT',
-
-    'LIST_LEFT', 'LIST_RIGHT',
     
 
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
