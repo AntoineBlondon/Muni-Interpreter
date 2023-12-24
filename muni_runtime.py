@@ -93,7 +93,12 @@ class Runtime:
         elif isinstance(node, ExpressionAssignment): # a += 1, a -= 1, a /=1 ...
             value = self.evaluate(node.value)
             variable = self.get_variable(node.name)
-            self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(variable.symbol()))
+            try:
+                symbol = type(variable).symbol()
+            except Exception as e:
+                symbol = variable.symbol()
+
+            self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
 
 
 
