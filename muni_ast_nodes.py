@@ -134,12 +134,12 @@ class ListInitialization(AstNode):
 
 
 class ListAccess(AstNode):
-    def __init__(self, name, index):
-        self.name = name
+    def __init__(self, expression, index):
+        self.expression = expression 
         self.index = index
 
     def __str__(self):
-        return f"ListAccess(name='{self.name}', index={self.index})"
+        return f"ListAccess(expression='{self.expression}', index={self.index})"
     
 
 class ListAssignment(AstNode):

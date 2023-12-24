@@ -75,8 +75,8 @@ def p_list_elements(p):
         p[0] = [p[1]]
 
 def p_list_access(p):
-    'expression : IDENTIFIER LBRACKET expression RBRACKET'
-    p[0] = ListAccess(name=p[1], index=p[3])
+    '''expression : expression LBRACKET expression RBRACKET'''
+    p[0] = ListAccess(expression=p[1], index=p[3])
 
 def p_list_assignment(p):
     'assignment : IDENTIFIER LBRACKET expression RBRACKET EQUALS expression'

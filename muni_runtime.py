@@ -38,6 +38,12 @@ class Runtime:
                 return scope[name]
         raise NameError(f"Variable '{name}' not found")
     
+    def is_variable(self, name):
+        for scope in reversed(self.scopes):
+            if name in scope:
+                return True
+        return False
+    
     def define_signal(self, signal_name):
         if signal_name in self.signals:
             raise Exception(f"Signal Error: {signal_name} already a signal.")
@@ -208,7 +214,7 @@ class Runtime:
             return Muni_List(values)
 
         elif isinstance(node, ListAccess):
-            list_object = self.evaluate(node.name)
+            list_object = self.evaluate(node.expression)
             index = self.evaluate(node.index)
             return list_object.get_item(index)
     
@@ -219,7 +225,9 @@ class Runtime:
             list_object.set_item(index, value)
             self.define_variable(node.name, list_object, str(list_object.symbol()))
 
-
+        elif self.is_variable(node):
+            return self.get_variable(node)
+        
         elif node is None:
             return None
         else:
@@ -418,6 +426,8 @@ class Runtime:
         elif 'list' in to_type:
             if '<' in to_type:
                 to_type = ('list', to_type[to_type.index('<') + 1:to_type.index('>')])
+            if isinstance(value, Muni_List):
+                return value
             return Muni_List(value, to_type[1])
         else:
             raise Exception(f"Cannot cast {type(value)} to {to_type}")

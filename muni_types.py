@@ -529,6 +529,8 @@ class Muni_Untyped(Muni_Type):
 
 class Muni_List(Muni_Type):
     def __init__(self, items=None, type_specifier='UNTYPED'):
+        if not isinstance(items, list):
+            raise TypeError(f"Muni_List requires a list value, got {type(items)}")
         super().__init__(items if items is not None else [])
         self.type_specifier = type_specifier
         for item in items:
@@ -543,18 +545,18 @@ class Muni_List(Muni_Type):
         self.value.remove(item)
 
     def get_item(self, index):
-        return self.value[index]
+        return self.value[int(index)]
     
     def set_item(self, index, item):
         self.check_type(item)
-        self.value[index] = item
+        self.value[int(index)] = item
     
     def insert(self, index, item):
         self.check_type(item)
-        self.value.insert(index, item)
+        self.value.insert(int(index), item)
 
     def pop(self, index=-1):
-        return self.value.pop(index)    
+        return self.value.pop(int(index))    
     
     
     
