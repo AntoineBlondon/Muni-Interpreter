@@ -49,7 +49,8 @@ def p_type_specifier(p):
                       | VOID
                       | UNTYPED
                       | LIST
-                      | LIST IMPORT_LITERAL'''
+                      | LIST IMPORT_LITERAL
+                      | DICT'''
     if len(p) == 3:
         p[0] = ('list', p[2])
     elif p[1] == 'list':

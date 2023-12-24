@@ -85,7 +85,10 @@ class Runtime:
             var_type = type(self.get_variable(node.name))
             if var_type != "UNTYPED":
                 self.check_type(var_type, value)
-            self.define_variable(node.name, value, str(self.get_variable(node.name).symbol()))
+            try:
+                self.define_variable(node.name, value, str(value.symbol()))
+            except Exception as e:
+                self.define_variable(node.name, value, str(type(value).symbol()))
 
         elif isinstance(node, ExpressionAssignment): # a += 1, a -= 1, a /=1 ...
             value = self.evaluate(node.value)
@@ -294,12 +297,7 @@ class Runtime:
         elif type_specifier == 'boolean':
             if not isinstance(value, Muni_Boolean):
                 raise Exception(f"Expected a boolean, got {type(value)}")
-    
-    def get_variable(self, name):
-        for scope in reversed(self.scopes):
-            if name in scope:
-                return scope[name]
-        raise NameError(f"Variable '{name}' not found")
+
     def get_function(self, name):
         return self.functions.get(name, None)
 

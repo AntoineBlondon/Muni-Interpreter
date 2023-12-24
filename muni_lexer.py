@@ -43,7 +43,8 @@ tokens = [
     'MODULUS',
     #'LARROW', 
     'RARROW',
-    'UNTYPED', 'LBRACKET', 'RBRACKET', 'AT',
+    'UNTYPED', 'LBRACKET', 'RBRACKET',
+    #'AT',
     
 
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
@@ -99,7 +100,7 @@ t_AMPERSAND = r'&'
 t_HAT = r'\^'
 
 t_UNTYPED = r'\?'
-t_AT = r'@'
+#t_AT = r'@'
 
 
 # Boolean values
