@@ -88,6 +88,9 @@ class Muni_Int(Muni_Type):
         elif isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(str(self.value % other.value), other.base)
         raise TypeError("Unsupported operand type for %: 'Muni_Int' and '{}'".format(type(other).__name__))
+    
+    def __neg__(self):
+        return Muni_Int(-self.value)
 
     # Comparison operations
     def __eq__(self, other):
@@ -248,6 +251,9 @@ class Muni_BasedNumber(Muni_Type):
     def __str__(self):
         return f"{self.base}@{self.str_to_base(self.base)}"
     
+    def __neg__(self):
+        return Muni_BasedNumber(-self.value, self.base)
+    
     def __int__(self):
         return self.value
     
@@ -309,6 +315,9 @@ class Muni_Complex(Muni_Type):
     
     def __complex__(self):
         return complex(self.real, self.imag)
+    
+    def __neg__(self):
+        return Muni_Complex(-self.real, -self.imag)
 
     def symbol():
         return 'complex'
@@ -406,6 +415,9 @@ class Muni_Float(Muni_Type):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value >= other.value)
         raise TypeError("Unsupported operand type for >=: 'Muni_Float' and '{}'".format(type(other).__name__))
+
+    def __neg__(self):
+        return Muni_Float(-self.value)
 
     def to_muni_string(self):
         return Muni_String(str(self.value))

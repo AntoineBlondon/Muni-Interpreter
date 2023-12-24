@@ -115,6 +115,10 @@ class Runtime:
         elif isinstance(node, NotOperation):
             value = self.evaluate(node.operand)
             return not value
+        
+        elif isinstance(node, UnaryOperation):
+            value = self.evaluate(node.operand)
+            return -value
 
         elif isinstance(node, FunctionCall):
             function = self.get_function(node.name)
@@ -131,7 +135,7 @@ class Runtime:
             return None
 
         elif isinstance(node, ImportStatement):
-            return self.handle_import(node.module_path)
+            return self.handle_import(node)
 
         elif isinstance(node, Muni_Type):
             return node
@@ -305,7 +309,7 @@ class Runtime:
 
         # Assign arguments to parameters in the new scope
         for (param_type, param_name), arg in zip(function.parameters, arguments):
-            self.define_variable(param_name, arg, param_type)
+            self.define_variable(param_name, self.evaluate(arg), param_type)
 
         # Execute each statement in the function body
         result = None
@@ -323,26 +327,43 @@ class Runtime:
     
     def register_stdlib_functions(self):
         import stdlib
-
-        self.functions['print'] = stdlib.muni_print
-        self.functions['type'] = stdlib.muni_type
-        self.functions['input'] = stdlib.muni_input
+        for func_name in dir(stdlib):
+            if func_name.startswith("muni_"):
+                self.functions[func_name[5:]] = getattr(stdlib, func_name)
     
-    def handle_import(self, module_path):
+    def handle_import(self, node):
+        module_path = node.module_path
+        alias = node.as_name if node.as_name is not None else ""
+
         if module_path.endswith(':py'):
             module_path = module_path[:-3]
             imported_module = importlib.import_module(module_path)
-            self.functions.update(imported_module.__dict__)
+            self.update_functions_with_alias(imported_module.__dict__, alias)
+
         elif module_path.endswith('.mun'):
             if not os.path.exists(module_path):
                 raise FileNotFoundError(f"File {module_path} not found")
-            # Parse the file content
-            imported_ast = muni_parser.parse_file(module_path)
 
-            # Evaluate the imported AST
+            
+            imported_ast = muni_parser.parse_file(module_path)
+            # Evaluate the imported AST with a temporary scope for functions
+            original_functions = self.functions.copy()
+            self.functions = {}
             for statement in imported_ast.statements:
                 self.evaluate(statement)
 
+            # Restore original functions and update with imported functions using alias
+            imported_functions = self.functions
+            self.functions = original_functions
+            self.update_functions_with_alias(imported_functions, alias)
+
+    def update_functions_with_alias(self, imported_functions, alias):
+        for func_name in imported_functions:
+            if alias:
+                self.functions[f"{alias}_{func_name}"] = imported_functions[func_name]
+            else:
+                self.functions[func_name] = imported_functions[func_name]
+             
     def perform_cast(self, to_type, value):
         # Example casting logic
         if to_type == 'int':

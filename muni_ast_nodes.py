@@ -60,6 +60,17 @@ class NotOperation(AstNode):
     def __repr__(self):
         return self.__str__()
 
+class UnaryOperation(AstNode):
+    def __init__(self, operand):
+        self.operand = operand
+
+    def __str__(self):
+        return f"UnaryOperation({self.operand})"
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Number(AstNode):
     def __init__(self, value):
         if not isinstance(value, (Muni_Int, Muni_Float, Muni_Complex, Muni_BasedNumber)):
@@ -188,8 +199,9 @@ class Return(AstNode):
 
 
 class ImportStatement(AstNode):
-    def __init__(self, module_path):
+    def __init__(self, module_path, as_name=None):
         self.module_path = module_path
+        self.as_name = as_name
 
 
 class Cast(AstNode):

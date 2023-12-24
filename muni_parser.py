@@ -79,7 +79,7 @@ def p_list_access(p):
     p[0] = ListAccess(expression=p[1], index=p[3])
 
 def p_list_assignment(p):
-    'assignment : IDENTIFIER LBRACKET expression RBRACKET EQUALS expression'
+    'assignment : expression LBRACKET expression RBRACKET EQUALS expression'
     p[0] = ListAssignment(name=p[1], index=p[3], value=p[6])
 
 def p_expression_paren(p):
@@ -225,8 +225,12 @@ def p_argument_list(p):
 
 
 def p_import_statement(p):
-    '''import_statement : IMPORT IMPORT_LITERAL'''
-    p[0] = ImportStatement(module_path=p[2])
+    '''import_statement : IMPORT IMPORT_LITERAL
+                        | IMPORT IMPORT_LITERAL AS IDENTIFIER'''
+    if len(p) == 5:
+        p[0] = ImportStatement(module_path=p[2], as_name=p[4])
+    else:
+        p[0] = ImportStatement(module_path=p[2])
 
 
 
@@ -283,6 +287,10 @@ def p_expression_string(p):
 def p_expression_identifier(p):
     'expression : IDENTIFIER'
     p[0] = Variable(name=p[1])
+
+def p_expression_negative(p):
+    'expression : MINUS expression'
+    p[0] = UnaryOperation(operand=p[2])
 
 
 def p_error(p):
