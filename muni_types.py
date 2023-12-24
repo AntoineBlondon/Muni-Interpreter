@@ -553,7 +553,8 @@ class Muni_List(Muni_Type):
         self.check_type(item)
         self.value.insert(index, item)
 
-    
+    def pop(self, index=-1):
+        return self.value.pop(index)    
     
     
     
@@ -569,7 +570,7 @@ class Muni_List(Muni_Type):
     def __str__(self):
         try:
             return f"<{types[self.type_specifier].symbol()}>[{', '.join(str(item) for item in self.value)}]"
-        except KeyError as e:
+        except Exception as e:
             return f"<{self.type_specifier}>[{', '.join(str(item) for item in self.value)}]"
 
     # Add more list-specific methods like remove, get, etc.
