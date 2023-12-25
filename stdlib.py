@@ -18,3 +18,6 @@ def muni_read(filename):
 def muni_write(filename, content):
     with open(str(filename), 'w') as f:
         f.write(str(content))
+
+def muni_sort(values):
+    return sorted(values)
