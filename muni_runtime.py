@@ -10,6 +10,7 @@ class Runtime:
         self.scopes = [{}]
         self.functions = {}
         self.signals = {}
+        self.watched = {}
         self.register_stdlib_functions()
 
     def define_function(self, func):
@@ -31,11 +32,20 @@ class Runtime:
             value = self.perform_cast(type_specifier, value)
             self.check_type(type_specifier, value)
             self.current_scope()[name] = value
+        
+        if(self.is_watched(name)):
+                self.execute_watch(name)
 
     def get_variable(self, name):
         for scope in reversed(self.scopes):
             if name in scope:
                 return scope[name]
+        raise NameError(f"Variable '{name}' not found")
+
+    def get_scope(self, name):
+        for i, scope in enumerate(reversed(self.scopes)):
+            if name in scope:
+                return len(self.scopes) - i - 1
         raise NameError(f"Variable '{name}' not found")
     
     def is_variable(self, name):
@@ -66,6 +76,35 @@ class Runtime:
             thread = threading.Thread(target=self.evaluate_block, args=(statements,))
             thread.start()
 
+    def assign_watching(self, var_name, body):
+        if not self.is_variable(var_name):
+            raise Exception(f"Variable Error: {var_name} not a variable.")
+        
+        if not self.is_watched(var_name):
+            self.watched[var_name] = []
+
+        self.watched[var_name].append({"scope": self.get_scope(var_name), "body": body})
+
+    def is_watched(self, var_name):
+        if not self.is_variable(var_name):
+            raise Exception(f"Variable Error: {var_name} not a variable.")
+        return var_name in self.watched
+    
+    def execute_watch(self, var_name):
+        if not self.is_variable(var_name):
+            raise Exception(f"Variable Error: {var_name} not a variable.")
+        
+        if not self.is_watched(var_name):
+            return
+        
+        for d_statements in self.watched[var_name]:
+            if d_statements["scope"] != self.get_scope(var_name):
+                continue
+            statements = d_statements["body"]
+            thread = threading.Thread(target=self.evaluate_block, args=(statements,))
+            thread.start()
+
+
     
     def evaluate(self, node, debug=False):
         if debug: print(node)
@@ -89,6 +128,9 @@ class Runtime:
                 self.define_variable(node.name, value, str(value.symbol()))
             except Exception as e:
                 self.define_variable(node.name, value, str(type(value).symbol()))
+            
+            if(self.is_watched(node.name)):
+                self.execute_watch(node.name)
 
         elif isinstance(node, ExpressionAssignment): # a += 1, a -= 1, a /=1 ...
             value = self.evaluate(node.value)
@@ -100,6 +142,7 @@ class Runtime:
 
             self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
 
+            
 
 
         # Handle BinaryOperation nodes
@@ -220,6 +263,9 @@ class Runtime:
             signal_name = node.signal_name
             statements = node.statements
             self.assign_signal(signal_name, statements)
+        
+        elif isinstance(node, WatchStatement):
+            self.assign_watching(node.variable_name, node.statements)
 
         elif isinstance(node, ListInitialization):
             values = [self.evaluate(val) for val in node.elements]
@@ -236,6 +282,8 @@ class Runtime:
             value = self.evaluate(node.value)
             list_object.set_item(index, value)
             self.define_variable(node.name, list_object, str(list_object.symbol()))
+
+            
 
         elif self.is_variable(node):
             return self.get_variable(node)
