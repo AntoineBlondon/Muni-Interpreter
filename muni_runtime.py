@@ -320,7 +320,7 @@ class Runtime:
 
             elif isinstance(node, ThrowStatement):
                 raise Muni_Error(self.evaluate(node.expression))
-
+            
             elif self.is_variable(node):
                 return self.get_variable(node)
 
@@ -599,6 +599,22 @@ class Runtime:
                 return Muni_Dict({})
             try:
                 return Muni_Dict(value)
+            except:
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
+            
+        elif to_type == 'py_int':
+            if isinstance(value, Muni_Int):
+                return value.value
+            elif isinstance(value, Muni_Float):
+                return int(value.value)
+            elif isinstance(value, Muni_BasedNumber):
+                return int(value.value)
+            elif isinstance(value, Muni_Boolean):
+                return int(value.value)
+            elif isinstance(value, type(None)):
+                return 0
+            try:
+                return int(value)
             except:
                 raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         else:

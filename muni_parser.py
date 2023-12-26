@@ -117,7 +117,8 @@ def p_expression_paren(p):
     p[0] = p[2]
 
 def p_casting(p):
-    'expression : type_specifier RARROW expression'
+    '''expression : type_specifier RARROW expression
+                  | IDENTIFIER RARROW expression'''
     p[0] = Cast(to_type=p[1], expression=p[3], lineno=p.lineno(1))
 
 

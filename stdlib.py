@@ -30,7 +30,7 @@ def muni_split(value, sep):
     return str(value).split(str(sep))
 
 def muni_length(value):
-    return len(value)
+    return Muni_Int(len(value))
 
 def muni_shuffle(values):
     random.shuffle(list(values))

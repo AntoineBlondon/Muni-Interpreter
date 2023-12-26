@@ -575,7 +575,17 @@ class Muni_List(Muni_Type):
     def __add__(self, other):
         if isinstance(other, Muni_List):
             return Muni_List(self.value + other.value, self.type_specifier)
-        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_List' and '{}'".format(type(other).__name__))
+    
+        try:
+            return Muni_List(self.value + [other], self.type_specifier)
+        except:
+            raise Muni_Error("Unsupported operand type(s) for +: 'Muni_List' and '{}'".format(type(other).__name__))
+
+    def __sub__(self, other):
+        try:
+            return self.value.remove(other)
+        except:
+            raise Muni_Error("Unsupported operand type(s) for -: 'Muni_List' and '{}'".format(type(other).__name__))
 
     def append(self, item):
         self.check_type(item)    
