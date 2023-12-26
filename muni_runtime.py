@@ -443,6 +443,8 @@ class Runtime:
                 return Muni_Int(int(value.value))
             elif isinstance(value, Muni_Boolean):
                 return Muni_Int(int(value.value))
+            elif isinstance(value, type(None)):
+                return Muni_Int(0)
             
             try:
                 return Muni_Int(int(value))
@@ -458,6 +460,8 @@ class Runtime:
                 return Muni_Float(value.value)
             elif isinstance(value, Muni_Boolean):
                 return Muni_Float(value.value)
+            elif isinstance(value, type(None)):
+                return Muni_Float(0)
             try:
                 return Muni_Float(float(value))
             except ValueError:
@@ -475,6 +479,8 @@ class Runtime:
                 return value
             elif isinstance(value, Muni_Boolean):
                 return Muni_Complex(value.value, 0)
+            elif isinstance(value, type(None)):
+                return Muni_Complex(0, 0)
             try:
                 return Muni_Complex(value.real, value.imag)
             except:
@@ -491,6 +497,8 @@ class Runtime:
                 return Muni_Boolean(value.value != 0)
             elif isinstance(value, Muni_Boolean):
                 return value
+            elif isinstance(value, type(None)):
+                return Muni_Boolean(False)
             
             try:
                 return Muni_Boolean(bool(value))
@@ -508,6 +516,8 @@ class Runtime:
                 return Muni_String(str(value.value))
             elif isinstance(value, Muni_String):
                 return value
+            elif isinstance(value, type(None)):
+                return Muni_String("")
             try:
                 return Muni_String(str(value))
             except:
@@ -517,6 +527,8 @@ class Runtime:
                 to_type = ('list', to_type[to_type.index('<') + 1:to_type.index('>')])
             if isinstance(value, Muni_List):
                 return Muni_List(value.value, to_type[1])
+            elif isinstance(value, type(None)):
+                return Muni_List([])
             return Muni_List(value, to_type[1])
         else:
             raise Exception(f"Cannot cast {type(value)} to {to_type}")
