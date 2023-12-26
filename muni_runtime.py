@@ -3,6 +3,7 @@ from muni_ast_nodes import *
 from muni_error import *
 import importlib
 import os
+import sys
 import muni_parser 
 import threading
 from muni_context_manager import ContextManager
@@ -445,6 +446,31 @@ class Runtime:
             imported_functions = self.functions
             self.functions = original_functions
             self.update_functions_with_alias(imported_functions, alias)
+        elif module_path.endswith(':lib'):
+            library_name = module_path[:-4]
+            library_path = os.path.join(os.path.dirname(__file__), "libraries", f"lib_{library_name}.py")
+            if not os.path.exists(library_path):
+                raise Muni_Error(f"Library {library_name} not found")
+            imported_module = self.import_from_absolute_path(library_path)
+            self.update_functions_with_alias(imported_module.__dict__, alias)
+            
+    def import_from_absolute_path(self, path_to_file):
+    # Extract module name and directory path
+        module_name = os.path.basename(path_to_file).replace('.py', '')
+        directory = os.path.dirname(path_to_file)
+
+        # Add directory to sys.path
+        if directory not in sys.path:
+            sys.path.append(directory)
+
+        # Load the module
+        spec = importlib.util.spec_from_file_location(module_name, path_to_file)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        return module
+        
+
 
     def update_functions_with_alias(self, imported_functions, alias):
         for func_name in imported_functions:
