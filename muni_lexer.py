@@ -44,6 +44,7 @@ tokens = [
     #'LARROW', 
     'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET',
+    'RANGE_OP', 'RANGE_OP_INCLUSIVE',
     #'AT',
     
 
@@ -101,6 +102,9 @@ t_HAT = r'\^'
 
 t_UNTYPED = r'\?'
 #t_AT = r'@'
+
+t_RANGE_OP = r'\.\.'
+t_RANGE_OP_INCLUSIVE = r'\.\.\.'
 
 
 # Boolean values

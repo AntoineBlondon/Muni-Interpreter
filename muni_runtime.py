@@ -283,10 +283,27 @@ class Runtime:
             list_object.set_item(index, value)
             self.define_variable(node.name, list_object, str(list_object.symbol()))
 
+        elif isinstance(node, Range):
+            start = self.evaluate(node.start)
+            end = self.evaluate(node.end)
+            step = self.evaluate(node.step)
+            return Muni_List([Muni_Int(x) for x in list(range(int(start), int(end) + node.inclusive, int(step)))], "INT")
+
             
 
         elif self.is_variable(node):
             return self.get_variable(node)
+
+        elif isinstance(node, str):
+            return Muni_String(node)
+        elif isinstance(node, int):
+            return Muni_Int(node)
+        elif isinstance(node, float):
+            return Muni_Float(node)
+        elif isinstance(node, bool):
+            return Muni_Boolean(node)
+        elif isinstance(node, list):
+            return Muni_List(node)  
         
         elif node is None:
             return None

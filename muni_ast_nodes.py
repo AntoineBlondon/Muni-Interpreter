@@ -330,3 +330,14 @@ class WhenStatement(AstNode):
     
     def __str__(self):
         return f"WhenStatement(signal_name={self.signal_name}, statements={self.statements})"
+
+
+class Range(AstNode):
+    def __init__(self, start, end, step, inclusive=False):
+        self.start = start
+        self.end = end
+        self.step = step
+        self.inclusive = inclusive
+    
+    def __str__(self):
+        return f"Range(start={self.start}, end={self.end}, step={self.step}, inclusive={self.inclusive})"

@@ -294,6 +294,23 @@ def p_expression_negative(p):
     p[0] = UnaryOperation(operand=p[2])
 
 
+def p_range_operator(p):
+    '''range_operator : RANGE_OP
+                      | RANGE_OP_INCLUSIVE'''
+    p[0] = p[1]
+
+def p_expression_range(p):
+    '''expression : expression range_operator expression
+                  | expression range_operator expression COLON expression'''
+    start = p[1]
+    end = p[3]
+    if len(p) == 4:
+        step = 1
+    else:
+        step = p[5]
+    p[0] = Range(start, end, step, inclusive=p[2]=="...")
+
+
 def p_error(p):
     if p:
         print(f"Syntax error at {p.lineno}, illegal character {p.value}")
