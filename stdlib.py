@@ -1,4 +1,5 @@
 from muni_types import *
+import random
 
 def muni_print(value):
     print(value)
@@ -30,3 +31,7 @@ def muni_split(value, sep):
 
 def muni_length(value):
     return len(value)
+
+def muni_shuffle(values):
+    random.shuffle(values)
+    return values
