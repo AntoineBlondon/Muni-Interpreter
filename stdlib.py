@@ -33,5 +33,5 @@ def muni_length(value):
     return len(value)
 
 def muni_shuffle(values):
-    random.shuffle(values)
+    random.shuffle(list(values))
     return values

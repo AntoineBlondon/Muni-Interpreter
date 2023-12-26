@@ -609,7 +609,8 @@ class Muni_List(Muni_Type):
                 raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
         
             
-    
+    def __list__(self):
+        return self.value
 
     def __iter__(self):
         return iter(self.value)
