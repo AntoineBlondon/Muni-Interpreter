@@ -4,7 +4,7 @@ class ContextManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(ContextManager, cls).__new__(cls)
-            cls._instance.context = {'lineno': 0}
+            cls._instance.context = {'lineno': 0, 'runtime': None}
         return cls._instance
 
     def set_lineno(self, lineno):
@@ -12,3 +12,10 @@ class ContextManager:
 
     def get_lineno(self):
         return self.context['lineno']
+    
+    def set_runtime(self, runtime):
+        self.context['runtime'] = runtime
+
+    def get_runtime(self):
+        return self.context['runtime']
+    

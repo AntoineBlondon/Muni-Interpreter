@@ -11,6 +11,8 @@ from muni_context_manager import ContextManager
 
 class Runtime:
     def __init__(self):
+        self.context = ContextManager()
+        self.context.set_runtime(self)
         self.scopes = [{}]
         self.functions = {}
         self.signals = {}
@@ -18,7 +20,6 @@ class Runtime:
         self.is_running = True
         self.lineno = 0
         self.register_stdlib_functions()
-        self.context = ContextManager()
 
     def define_function(self, func):
         self.functions[func.name] = func
@@ -28,20 +29,30 @@ class Runtime:
 
     def pop_scope(self):
         self.scopes.pop()
+    
+    def get_name(self, value):
+        for scope in reversed(self.scopes):
+            for name in scope:
+                if id(scope[name]) == value.id:
+                    return name
 
     def current_scope(self):
         return self.scopes[-1]
 
     def define_variable(self, name, value, type_specifier=None):
-        if type_specifier == "?":
+        if not self.is_variable(name):
+            if type_specifier != "?":
+                value = self.perform_cast(type_specifier, value)
+                self.check_type(type_specifier, value)
             self.current_scope()[name] = value
         else:
-            value = self.perform_cast(type_specifier, value)
-            self.check_type(type_specifier, value)
-            self.current_scope()[name] = value
+            if type_specifier != "?":
+                value = self.perform_cast(type_specifier, value)
+            try:
+                self.current_scope()[name].value = value.value
+            except:
+                self.current_scope()[name] = value
         
-        if(self.is_watched(name)):
-                self.execute_watch(name)
 
     def get_variable(self, name):
         for scope in reversed(self.scopes):
@@ -294,7 +305,7 @@ class Runtime:
                 index = self.evaluate(node.index)
                 return obj.get_item(index)
         
-            elif isinstance(node, ElementAccess):
+            elif isinstance(node, ElementAssignment):
                 obj = self.evaluate(node.name)
                 index = self.evaluate(node.index)
                 value = self.evaluate(node.value)

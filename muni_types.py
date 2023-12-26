@@ -1,8 +1,28 @@
 from math import sqrt
 from muni_error import *
+from muni_context_manager import *
 class Muni_Type:
     def __init__(self, value):
-        self.value = value
+        self._value = value
+        self.id = id(self)
+        
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        runtime = ContextManager().get_runtime()
+        name = runtime.get_name(self)
+        if new_value != self.value:
+            self._value = new_value
+            self.on_change()
+
+    def on_change(self):
+        runtime = ContextManager().get_runtime()
+        name = runtime.get_name(self)
+        if runtime.is_watched(name):
+            runtime.execute_watch(name)
 
     def __str__(self):
         return str(self.value)
@@ -548,6 +568,12 @@ class Muni_List(Muni_Type):
         self.type_specifier = type_specifier
         for item in items:
             self.check_type(item)
+
+    
+    def __add__(self, other):
+        if isinstance(other, Muni_List):
+            return Muni_List(self.value + other.value, self.type_specifier)
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_List' and '{}'".format(type(other).__name__))
 
     def append(self, item):
         self.check_type(item)    
