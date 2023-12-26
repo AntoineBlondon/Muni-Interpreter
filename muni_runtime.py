@@ -287,7 +287,7 @@ class Runtime:
             start = self.evaluate(node.start)
             end = self.evaluate(node.end)
             step = self.evaluate(node.step)
-            return Muni_List([Muni_Int(x) for x in list(range(int(start), int(end) + node.inclusive, int(step)))], "INT")
+            return Muni_List([Muni_Int(x) for x in list(range(int(start), int(end) + node.inclusive * (-1)**(int(step)<=0), int(step)))], "INT")
 
             
 
