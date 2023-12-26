@@ -32,6 +32,7 @@ keywords = {
     'emit': 'EMIT',
     'watch': 'WATCH',
     'when': 'WHEN',
+    'throw': 'THROW',
 
 }
 

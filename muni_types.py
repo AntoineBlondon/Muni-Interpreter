@@ -1,4 +1,5 @@
 from math import sqrt
+from muni_error import *
 class Muni_Type:
     def __init__(self, value):
         self.value = value
@@ -10,7 +11,7 @@ class Muni_Type:
 class Muni_Int(Muni_Type):
     def __init__(self, value):
         if not isinstance(value, int):
-            raise TypeError("Muni_Int requires an integer value")
+            raise Muni_Error("Muni_Int requires an integer value")
         super().__init__(value)
 
     def __add__(self, other):
@@ -25,7 +26,7 @@ class Muni_Int(Muni_Type):
         elif isinstance(other, Muni_String):
             return Muni_String(str(self) + other.value)
         
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __sub__(self, other):
         if isinstance(other, Muni_Int):
@@ -37,7 +38,7 @@ class Muni_Int(Muni_Type):
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value - other.real, -other.imag)
         
-        raise TypeError("Unsupported operand type(s) for -: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for -: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __mul__(self, other):
         if isinstance(other, Muni_Int):
@@ -49,12 +50,12 @@ class Muni_Int(Muni_Type):
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value * other.real, self.value * other.imag)
         
-        raise TypeError("Unsupported operand type(s) for *: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for *: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __truediv__(self, other):
         if isinstance(other, Muni_Int):
             if other.value == 0:
-                raise ValueError("Error: Division by zero")
+                raise Muni_Error("Error: Division by zero")
             return Muni_Float(self.value / other.value)  # Integer division
         elif isinstance(other, Muni_Float):
             return Muni_Float(self.value / other.value)
@@ -63,31 +64,31 @@ class Muni_Int(Muni_Type):
         elif isinstance(other, Muni_Complex):
             return Muni_Complex((self.value*other.real) / (other.modulus())**2, (self.value*other.imag) / (other.modulus())**2)
         
-        raise TypeError("Unsupported operand type(s) for /: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for /: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     # Floor Division
     def __floordiv__(self, other):
         if isinstance(other, Muni_Int):
             if other.value == 0:
-                raise ValueError("Error: Division by zero")
+                raise Muni_Error("Error: Division by zero")
             return Muni_Int(self.value // other.value)
         elif isinstance(other, Muni_Float):
             return Muni_Int(self.value // other.value)
         elif isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(str(self.value // other.value), other.base)
-        raise TypeError("Unsupported operand type for //: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for //: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     # Modulus
     def __mod__(self, other):
         if isinstance(other, Muni_Int):
             if other.value == 0:
-                raise ValueError("Modulus by zero")
+                raise Muni_Error("Modulus by zero")
             return Muni_Int(self.value % other.value)
         elif isinstance(other, Muni_Float):
             return Muni_Float(self.value % other.value)
         elif isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(str(self.value % other.value), other.base)
-        raise TypeError("Unsupported operand type for %: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for %: 'Muni_Int' and '{}'".format(type(other).__name__))
     
     def __neg__(self):
         return Muni_Int(-self.value)
@@ -107,22 +108,22 @@ class Muni_Int(Muni_Type):
     def __lt__(self, other):
         if isinstance(other, (Muni_Int, Muni_Float, Muni_BasedNumber)):
             return Muni_Boolean(self.value < other.value)
-        raise TypeError("Unsupported operand type for <: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __le__(self, other):
         if isinstance(other, (Muni_Int, Muni_Float, Muni_BasedNumber)):
             return Muni_Boolean(self.value <= other.value)
-        raise TypeError("Unsupported operand type for <=: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <=: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __gt__(self, other):
         if isinstance(other, (Muni_Int, Muni_Float, Muni_BasedNumber)):
             return Muni_Boolean(self.value > other.value)
-        raise TypeError("Unsupported operand type for >: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     def __ge__(self, other):
         if isinstance(other, (Muni_Int, Muni_Float, Muni_BasedNumber)):
             return Muni_Boolean(self.value >= other.value)
-        raise TypeError("Unsupported operand type for >=: 'Muni_Int' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >=: 'Muni_Int' and '{}'".format(type(other).__name__))
 
     # Type Conversion Methods
     def to_muni_float(self):
@@ -156,24 +157,24 @@ class Muni_Int(Muni_Type):
 class Muni_BasedNumber(Muni_Type):
     def __init__(self, value, base):
         if base < 2 or base > 36:
-            raise ValueError("Base must be between 2 and 36")
+            raise Muni_Error("Base must be between 2 and 36")
         self.base = base
         self.value = self._convert_to_decimal(value, base)
 
     def _convert_to_decimal(self, value, base):
         try:
             return int(str(value), base)
-        except ValueError:
-            raise ValueError(f"Invalid value {value} for base {base}")
+        except Muni_Error:
+            raise Muni_Error(f"Invalid value {value} for base {base}")
         
     def to_base(self, new_base):
         if new_base < 2 or new_base > 36:
-            raise ValueError("Base must be between 2 and 36")
+            raise Muni_Error("Base must be between 2 and 36")
         return Muni_BasedNumber(self.str_to_base(new_base), new_base)
 
     def str_to_base(self, new_base):
         if new_base < 2 or new_base > 36:
-            raise ValueError("Base must be between 2 and 36")
+            raise Muni_Error("Base must be between 2 and 36")
         return self._convert_from_decimal(self.value, new_base)
 
     def _convert_from_decimal(self, number, base):
@@ -194,12 +195,12 @@ class Muni_BasedNumber(Muni_Type):
             return Muni_Complex(self.value + other.real, other.imag)
         elif isinstance(other, Muni_String):
             return Muni_String(str(self) + other.value)
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def add(self, other, base):
         if isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(self.value + other.value, base)
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def __sub__(self, other):
         if isinstance(other, Muni_Float):
@@ -208,12 +209,12 @@ class Muni_BasedNumber(Muni_Type):
             return Muni_BasedNumber(self.value - other.value, self.base)
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value - other.real, -other.imag)
-        raise TypeError("Unsupported operand type(s) for -: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for -: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def subtract(self, other, base):
         if isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(self.value - other.value, base)
-        raise TypeError("Unsupported operand type(s) for -: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for -: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def __mul__(self, other):
         if isinstance(other, Muni_Float):
@@ -222,12 +223,12 @@ class Muni_BasedNumber(Muni_Type):
             return Muni_BasedNumber(self.value * other.value, self.base)
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value * other.real, self.value * other.imag)
-        raise TypeError("Unsupported operand type(s) for *: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for *: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def multiply(self, other, base):
         if isinstance(other, Muni_BasedNumber):
             return Muni_BasedNumber(self.value * other.value, base)
-        raise TypeError("Unsupported operand type(s) for *: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for *: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def __truediv__(self, other):
         if isinstance(other, Muni_Float):
@@ -236,17 +237,17 @@ class Muni_BasedNumber(Muni_Type):
             return Muni_Float(self.value / other.value)
         elif isinstance(other, Muni_Complex):
             return Muni_Complex((self.value*other.real) / (other.modulus())**2, (self.value*other.imag) / (other.modulus())**2)
-        raise TypeError("Unsupported operand type(s) for /: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for /: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def divide(self, other):
         if isinstance(other, Muni_BasedNumber):
             return Muni_Float(self.value / other.value)
-        raise TypeError("Unsupported operand type(s) for /: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for /: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
     def __mod__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber, Muni_Float)):
             return Muni_Int(self.value % other.value)
-        raise TypeError("Unsupported operand type(s) for %: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for %: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
 
     def __str__(self):
         return f"{self.base}@{self.str_to_base(self.base)}"
@@ -272,27 +273,27 @@ class Muni_BasedNumber(Muni_Type):
     def __eq__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value == other.value)
-        raise TypeError("Unsupported operand type for ==: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for ==: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     def __ne__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value != other.value)
-        raise TypeError("Unsupported operand type for !=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for !=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     def __lt__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber, Muni_Float)):
             return Muni_Boolean(self.value < other.value)
-        raise TypeError("Unsupported operand type for <: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     def __le__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber, Muni_Float)):
             return Muni_Boolean(self.value <= other.value)
-        raise TypeError("Unsupported operand type for <=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     def __gt__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber, Muni_Float)):
             return Muni_Boolean(self.value > other.value)
-        raise TypeError("Unsupported operand type for >: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     def __ge__(self, other):
         if isinstance(other, (Muni_Int, Muni_BasedNumber, Muni_Float)):
             return Muni_Boolean(self.value >= other.value)
-        raise TypeError("Unsupported operand type for >=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >=: 'Muni_BasedNumber' and '{}'".format(type(other).__name__))
     
 
 class Muni_Complex(Muni_Type):
@@ -306,7 +307,7 @@ class Muni_Complex(Muni_Type):
             return Muni_Complex(self.real + other.real, self.imag + other.imag)
         elif isinstance(other, Muni_String):
             return Muni_String(str(self) + other.value)
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_Complex' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_Complex' and '{}'".format(type(other).__name__))
     def modulus(self):
         return Muni_Float(sqrt(self.real**2 + self.imag**2))
     
@@ -327,8 +328,8 @@ class Muni_Float(Muni_Type):
         if not isinstance(value, float):
             try:  # Try converting to float
                 value = float(value)
-            except ValueError:
-                raise TypeError("Muni_Float requires a float value")
+            except Muni_Error:
+                raise Muni_Error("Muni_Float requires a float value")
         super().__init__(float(value))
 
     def __add__(self, other):
@@ -340,7 +341,7 @@ class Muni_Float(Muni_Type):
             return Muni_Complex(self.value + other.real, other.imag)
         elif isinstance(other, Muni_String):
             return Muni_String(str(self.value) + other.value)
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __sub__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int)):
@@ -349,7 +350,7 @@ class Muni_Float(Muni_Type):
             return Muni_Float(str(self.value - other.value))
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value - other.real, -other.imag)
-        raise TypeError("Unsupported operand type(s) for -: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for -: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __mul__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int)):
@@ -358,32 +359,32 @@ class Muni_Float(Muni_Type):
             return Muni_Float(str(self.value * other.value))
         elif isinstance(other, Muni_Complex):
             return Muni_Complex(self.value * other.real, self.value * other.imag)
-        raise TypeError("Unsupported operand type(s) for *: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for *: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __truediv__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int)):
             if other.value == 0:
-                raise ValueError("Error: Division by zero")
+                raise Muni_Error("Error: Division by zero")
             return Muni_Float(self.value / other.value)
         elif isinstance(other, Muni_BasedNumber):
             return Muni_Float(str(self.value / other.value))
         elif isinstance(other, Muni_Complex):
             return Muni_Complex((self.value*other.real) / (other.modulus())**2, (self.value*other.imag) / (other.modulus())**2)
-        raise TypeError("Unsupported operand type(s) for /: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for /: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __floordiv__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             if other.value == 0:
-                raise ValueError("Error: Division by zero")
+                raise Muni_Error("Error: Division by zero")
             return Muni_Float(self.value // other.value)
-        raise TypeError("Unsupported operand type for //: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for //: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __mod__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             if other.value == 0:
-                raise ValueError("Modulus by zero")
+                raise Muni_Error("Modulus by zero")
             return Muni_Float(self.value % other.value)
-        raise TypeError("Unsupported operand type for %: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for %: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     # Comparison operations
     def __eq__(self, other):
@@ -399,22 +400,22 @@ class Muni_Float(Muni_Type):
     def __lt__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value < other.value)
-        raise TypeError("Unsupported operand type for <: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __le__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value <= other.value)
-        raise TypeError("Unsupported operand type for <=: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for <=: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __gt__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value > other.value)
-        raise TypeError("Unsupported operand type for >: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __ge__(self, other):
         if isinstance(other, (Muni_Float, Muni_Int, Muni_BasedNumber)):
             return Muni_Boolean(self.value >= other.value)
-        raise TypeError("Unsupported operand type for >=: 'Muni_Float' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type for >=: 'Muni_Float' and '{}'".format(type(other).__name__))
 
     def __neg__(self):
         return Muni_Float(-self.value)
@@ -444,18 +445,18 @@ class Muni_Boolean(Muni_Type):
         if not isinstance(value, bool):
             try:  # Try converting to float
                 value = bool(value)
-            except ValueError:
-                raise TypeError("Muni_Boolean requires a boolean value")
+            except Muni_Error:
+                raise Muni_Error("Muni_Boolean requires a boolean value")
         super().__init__(bool(value))
     def __eq__(self, other):
         if isinstance(other, Muni_Boolean):
             return Muni_Boolean(self.value == other.value)
-        raise TypeError("Unsupported operand type(s) for ==: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for ==: 'Muni_Boolean' and '{}'".format(type(other).__name__))
     
     def __ne__(self, other):
         if isinstance(other, Muni_Boolean):
             return Muni_Boolean(self.value != other.value)
-        raise TypeError("Unsupported operand type(s) for !=: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for !=: 'Muni_Boolean' and '{}'".format(type(other).__name__))
     
     def __not__(self):
         return Muni_Boolean(not self.value)
@@ -463,22 +464,22 @@ class Muni_Boolean(Muni_Type):
     def __and__(self, other):
         if isinstance(other, Muni_Boolean):
             return Muni_Boolean(self.value and other.value)
-        raise TypeError("Unsupported operand type(s) for &: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for &: 'Muni_Boolean' and '{}'".format(type(other).__name__))
 
     def __or__(self, other):
         if isinstance(other, Muni_Boolean):
             return Muni_Boolean(self.value or other.value)
-        raise TypeError("Unsupported operand type(s) for |: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for |: 'Muni_Boolean' and '{}'".format(type(other).__name__))
     
     def __xor__(self, other):
         if isinstance(other, Muni_Boolean):
             return Muni_Boolean(self.value ^ other.value)
-        raise TypeError("Unsupported operand type(s) for ^: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for ^: 'Muni_Boolean' and '{}'".format(type(other).__name__))
 
     def __add__(self, other):
         if isinstance(other, Muni_String):
             return Muni_String(str(self.value) + other.value)
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_Boolean' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_Boolean' and '{}'".format(type(other).__name__))
 
     def __str__(self):
         return "true" if self.value else "false"
@@ -498,7 +499,7 @@ class Muni_Boolean(Muni_Type):
 class Muni_String(Muni_Type):
     def __init__(self, value):
         if not isinstance(value, str):
-            raise TypeError("Muni_String requires a string value")
+            raise Muni_Error("Muni_String requires a string value")
         super().__init__(value)
     
     def __add__(self, other):
@@ -506,7 +507,7 @@ class Muni_String(Muni_Type):
             return Muni_String(self.value + other.value)
         elif isinstance(other, (Muni_Int, Muni_Float, Muni_BasedNumber, Muni_Boolean)):
             return Muni_String(self.value + str(other))
-        raise TypeError("Unsupported operand type(s) for +: 'Muni_String' and '{}'".format(type(other).__name__))
+        raise Muni_Error("Unsupported operand type(s) for +: 'Muni_String' and '{}'".format(type(other).__name__))
     # Add more methods specific to string operations
 
     def __str__(self):
@@ -542,7 +543,7 @@ class Muni_Untyped(Muni_Type):
 class Muni_List(Muni_Type):
     def __init__(self, items=None, type_specifier='UNTYPED'):
         if not isinstance(items, list):
-            raise TypeError(f"Muni_List requires a list value, got {type(items)}")
+            raise Muni_Error(f"Muni_List requires a list value, got {type(items)}")
         super().__init__(items if items is not None else [])
         self.type_specifier = type_specifier
         for item in items:
@@ -574,7 +575,7 @@ class Muni_List(Muni_Type):
     
     def check_type(self, item):
         if self.type_specifier != "UNTYPED" and not isinstance(item, types[self.type_specifier]):
-            raise TypeError(f"Expected type {types[self.type_specifier]}, got {type(item)}")
+            raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
             
     
 
@@ -597,7 +598,7 @@ class Muni_Dict(Muni_Type):
 
     def set_item(self, key, item):
         if not isinstance(item, Muni_Type):
-            raise TypeError("Values must be Muni_Type instances")
+            raise Muni_Error("Values must be Muni_Type instances")
         self.value[key] = item
 
     def get_item(self, key):

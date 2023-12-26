@@ -1,9 +1,12 @@
 from muni_types import *
 from muni_ast_nodes import *
+from muni_error import *
 import importlib
 import os
 import muni_parser 
 import threading
+from muni_context_manager import ContextManager
+
 
 class Runtime:
     def __init__(self):
@@ -11,7 +14,10 @@ class Runtime:
         self.functions = {}
         self.signals = {}
         self.watched = {}
+        self.is_running = True
+        self.lineno = 0
         self.register_stdlib_functions()
+        self.context = ContextManager()
 
     def define_function(self, func):
         self.functions[func.name] = func
@@ -40,13 +46,13 @@ class Runtime:
         for scope in reversed(self.scopes):
             if name in scope:
                 return scope[name]
-        raise NameError(f"Variable '{name}' not found")
+        raise Muni_Error(f"Variable '{name}' not found")
 
     def get_scope(self, name):
         for i, scope in enumerate(reversed(self.scopes)):
             if name in scope:
                 return len(self.scopes) - i - 1
-        raise NameError(f"Variable '{name}' not found")
+        raise Muni_Error(f"Variable '{name}' not found")
     
     def is_variable(self, name):
         for scope in reversed(self.scopes):
@@ -56,12 +62,12 @@ class Runtime:
     
     def define_signal(self, signal_name):
         if signal_name in self.signals:
-            raise Exception(f"Signal Error: {signal_name} already a signal.")
+            raise Muni_Error(f"Signal Error: {signal_name} already a signal.")
         self.signals[signal_name] = None
 
     def assign_signal(self, signal_name, statements):
         if signal_name not in self.signals:
-            raise Exception(f"Signal Error: {signal_name} not a signal.")
+            raise Muni_Error(f"Signal Error: {signal_name} not a signal.")
 
         if self.signals[signal_name] is None:
             self.signals[signal_name] = [statements]
@@ -70,7 +76,7 @@ class Runtime:
 
     def emit_signal(self, signal_name):
         if signal_name not in self.signals:
-            raise Exception(f"Signal Error: {signal_name} not a signal.")
+            raise Muni_Error(f"Signal Error: {signal_name} not a signal.")
         
         for statements in self.signals[signal_name]:
             thread = threading.Thread(target=self.evaluate_block, args=(statements,))
@@ -78,7 +84,7 @@ class Runtime:
 
     def assign_watching(self, var_name, body):
         if not self.is_variable(var_name):
-            raise Exception(f"Variable Error: {var_name} not a variable.")
+            raise Muni_Error(f"Variable Error: {var_name} not a variable.")
         
         if not self.is_watched(var_name):
             self.watched[var_name] = []
@@ -87,12 +93,12 @@ class Runtime:
 
     def is_watched(self, var_name):
         if not self.is_variable(var_name):
-            raise Exception(f"Variable Error: {var_name} not a variable.")
+            raise Muni_Error(f"Variable Error: {var_name} not a variable.")
         return var_name in self.watched
     
     def execute_watch(self, var_name):
         if not self.is_variable(var_name):
-            raise Exception(f"Variable Error: {var_name} not a variable.")
+            raise Muni_Error(f"Variable Error: {var_name} not a variable.")
         
         if not self.is_watched(var_name):
             return
@@ -108,207 +114,218 @@ class Runtime:
     
     def evaluate(self, node, debug=False):
         if debug: print(node)
-        # Handle Number nodes
-        if isinstance(node, (Number, Boolean, String)):
-            return node.value
-        
-        elif isinstance(node, Variable):
-            return self.get_variable(node.name)
-        
-        elif isinstance(node, Declaration):
-            value = self.evaluate(node.value)
-            self.define_variable(node.name, value, node.type_specifier)
-
-        elif isinstance(node, Assignment):
-            value = self.evaluate(node.value)
-            var_type = type(self.get_variable(node.name))
-            if var_type != "UNTYPED":
-                self.check_type(var_type, value)
-            try:
-                self.define_variable(node.name, value, str(value.symbol()))
-            except Exception as e:
-                self.define_variable(node.name, value, str(type(value).symbol()))
+        if not self.is_running:
+            return
+        try:
+            self.context.set_lineno(node.lineno)
+        except:
+            pass
+        try:
+            if isinstance(node, (Number, Boolean, String)):
+                return node.value
             
-            if(self.is_watched(node.name)):
-                self.execute_watch(node.name)
-
-        elif isinstance(node, ExpressionAssignment): # a += 1, a -= 1, a /=1 ...
-            value = self.evaluate(node.value)
-            variable = self.get_variable(node.name)
-            try:
-                symbol = type(variable).symbol()
-            except Exception as e:
-                symbol = variable.symbol()
-
-            self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
-
+            elif isinstance(node, Variable):
+                return self.get_variable(node.name)
             
+            elif isinstance(node, Declaration):
+                value = self.evaluate(node.value)
+                self.define_variable(node.name, value, node.type_specifier)
+
+            elif isinstance(node, Assignment):
+                value = self.evaluate(node.value)
+                var_type = type(self.get_variable(node.name))
+                if var_type != "UNTYPED":
+                    self.check_type(var_type, value)
+                try:
+                    self.define_variable(node.name, value, str(value.symbol()))
+                except Exception as e:
+                    self.define_variable(node.name, value, str(type(value).symbol()))
+                
+                if(self.is_watched(node.name)):
+                    self.execute_watch(node.name)
+
+            elif isinstance(node, ExpressionAssignment): # a += 1, a -= 1, a /=1 ...
+                value = self.evaluate(node.value)
+                variable = self.get_variable(node.name)
+                try:
+                    symbol = type(variable).symbol()
+                except Exception as e:
+                    symbol = variable.symbol()
+
+                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
+
+                
 
 
-        # Handle BinaryOperation nodes
-        elif isinstance(node, BinaryOperation):
-            left_val = self.evaluate(node.left)
-            right_val = self.evaluate(node.right)
-            return self.apply_binary_operator(left_val, right_val, node.operator)
-        
-        # Handle LogicalOperation nodes
-        elif isinstance(node, LogicalOperation):
-            left_val = self.evaluate(node.left)
-            right_val = self.evaluate(node.right)
-            return self.apply_logical_operator(left_val, right_val, node.operator)
-        
-        # Handle ComparisonOperation nodes
-        elif isinstance(node, ComparisonOperation):
-            left_val = self.evaluate(node.left)
-            right_val = self.evaluate(node.right)
-            return self.apply_comparison_operator(left_val, right_val, node.operator)
-        
-        elif isinstance(node, NotOperation):
-            value = self.evaluate(node.operand)
-            return not value
-        
-        elif isinstance(node, UnaryOperation):
-            value = self.evaluate(node.operand)
-            return -value
+            # Handle BinaryOperation nodes
+            elif isinstance(node, BinaryOperation):
+                left_val = self.evaluate(node.left)
+                right_val = self.evaluate(node.right)
+                return self.apply_binary_operator(left_val, right_val, node.operator)
+            
+            # Handle LogicalOperation nodes
+            elif isinstance(node, LogicalOperation):
+                left_val = self.evaluate(node.left)
+                right_val = self.evaluate(node.right)
+                return self.apply_logical_operator(left_val, right_val, node.operator)
+            
+            # Handle ComparisonOperation nodes
+            elif isinstance(node, ComparisonOperation):
+                left_val = self.evaluate(node.left)
+                right_val = self.evaluate(node.right)
+                return self.apply_comparison_operator(left_val, right_val, node.operator)
+            
+            elif isinstance(node, NotOperation):
+                value = self.evaluate(node.operand)
+                return not value
+            
+            elif isinstance(node, UnaryOperation):
+                value = self.evaluate(node.operand)
+                return -value
 
-        elif isinstance(node, FunctionCall):
-            function = self.get_function(node.name)
-            if callable(function):
-                arguments = [self.evaluate(arg) for arg in node.arguments]
-                return function(*arguments)
-            return self.call_function(function, node.arguments)
+            elif isinstance(node, FunctionCall):
+                function = self.get_function(node.name)
+                if callable(function):
+                    arguments = [self.evaluate(arg) for arg in node.arguments]
+                    if self.is_running == False: return
+                    return function(*arguments)
+                return self.call_function(function, node.arguments)
 
-        elif isinstance(node, Return):
-            return self.evaluate(node.value)
+            elif isinstance(node, Return):
+                return self.evaluate(node.value)
+            
+            elif isinstance(node, FunctionDeclaration):
+                self.define_function(node)
+                return None
+
+            elif isinstance(node, ImportStatement):
+                return self.handle_import(node)
+
+            elif isinstance(node, Muni_Type):
+                return node
+            
+            elif isinstance(node, Cast):
+                value = self.evaluate(node.expression)
+                return self.perform_cast(node.to_type, value)
+            
+            elif isinstance(node, IfStatement):
+                condition_value = self.evaluate(node.condition)
+                if condition_value:
+                    return self.evaluate_block(node.true_block)
+                return None
+
+            elif isinstance(node, IfElseStatement):
+                condition_value = self.evaluate(node.condition)
+                if condition_value:
+                    self.evaluate_block(node.true_block)
+                else:
+                    self.evaluate_block(node.false_block)
+                return None
+
+            elif isinstance(node, WhileStatement):
+                for i in range(int(node.nb_iterations)):
+                    self.evaluate_block(node.body)
+                while self.evaluate(node.condition):
+                    self.evaluate_block(node.body)
+                return None
+            
+            elif isinstance(node, UntilStatement):
+                for i in range(int(node.nb_iterations)):
+                    self.evaluate_block(node.body)
+                while not self.evaluate(node.condition):
+                    self.evaluate_block(node.body)
+                return None
+            
+            elif isinstance(node, ForInStatement):
+                for value in self.evaluate(node.iterable):
+                    self.check_type(node.type_specifier, value)
+                    self.define_variable(node.identifier, value, node.type_specifier)
+                    self.evaluate_block(node.body)
+                return None
+            
+            elif isinstance(node, ForStatement):
+                self.evaluate(node.begin_statement)
+                while self.evaluate(node.condition):
+                    self.evaluate_block(node.body)
+                    self.evaluate(node.end_statement)
+                return None
+            
+            elif isinstance(node, SwitchStatement):
+                switch_value = self.evaluate(node.expression)
+                default_case = None
+                for case in node.cases:
+                    if not isinstance(case, CaseClause):
+                        default_case = case
+                        continue
+                    if self.evaluate(case.value) == switch_value:
+                        self.evaluate_block(case.statements)
+                        return
+                if default_case:
+                    self.evaluate_block(default_case.statements)
+
+            elif isinstance(node, SignalDeclaration):
+                signal_name = node.signal_name
+                self.define_signal(signal_name)
+                return None
+            
+            elif isinstance(node, EmitStatement):
+                signal_name = node.signal_name
+                self.emit_signal(signal_name)
+            
+            elif isinstance(node, WhenStatement):
+                signal_name = node.signal_name
+                statements = node.statements
+                self.assign_signal(signal_name, statements)
+            
+            elif isinstance(node, WatchStatement):
+                self.assign_watching(node.variable_name, node.statements)
+
+            elif isinstance(node, ListInitialization):
+                values = [self.evaluate(val) for val in node.elements]
+                return Muni_List(values)
+
+            elif isinstance(node, ListAccess):
+                list_object = self.evaluate(node.expression)
+                index = self.evaluate(node.index)
+                return list_object.get_item(index)
         
-        elif isinstance(node, FunctionDeclaration):
-            self.define_function(node)
-            return None
+            elif isinstance(node, ListAssignment):
+                list_object = self.evaluate(node.name)
+                index = self.evaluate(node.index)
+                value = self.evaluate(node.value)
+                list_object.set_item(index, value)
+                self.define_variable(node.name, list_object, str(list_object.symbol()))
 
-        elif isinstance(node, ImportStatement):
-            return self.handle_import(node)
+            elif isinstance(node, Range):
+                start = self.evaluate(node.start)
+                end = self.evaluate(node.end)
+                step = self.evaluate(node.step)
+                return Muni_List([Muni_Int(x) for x in list(range(int(start), int(end) + node.inclusive * (-1)**(int(step)<=0), int(step)))], "INT")
 
-        elif isinstance(node, Muni_Type):
-            return node
-        
-        elif isinstance(node, Cast):
-            value = self.evaluate(node.expression)
-            return self.perform_cast(node.to_type, value)
-        
-        elif isinstance(node, IfStatement):
-            condition_value = self.evaluate(node.condition)
-            if condition_value:
-                return self.evaluate_block(node.true_block)
-            return None
+            elif isinstance(node, ThrowStatement):
+                raise Muni_Error(self.evaluate(node.expression))
 
-        elif isinstance(node, IfElseStatement):
-            condition_value = self.evaluate(node.condition)
-            if condition_value:
-                self.evaluate_block(node.true_block)
+            elif self.is_variable(node):
+                return self.get_variable(node)
+
+            elif isinstance(node, str):
+                return Muni_String(node)
+            elif isinstance(node, int):
+                return Muni_Int(node)
+            elif isinstance(node, float):
+                return Muni_Float(node)
+            elif isinstance(node, bool):
+                return Muni_Boolean(node)
+            elif isinstance(node, list):
+                return Muni_List(node)  
+            
+            elif node is None:
+                return None
             else:
-                self.evaluate_block(node.false_block)
-            return None
-
-        elif isinstance(node, WhileStatement):
-            for i in range(int(node.nb_iterations)):
-                self.evaluate_block(node.body)
-            while self.evaluate(node.condition):
-                self.evaluate_block(node.body)
-            return None
-        
-        elif isinstance(node, UntilStatement):
-            for i in range(int(node.nb_iterations)):
-                self.evaluate_block(node.body)
-            while not self.evaluate(node.condition):
-                self.evaluate_block(node.body)
-            return None
-        
-        elif isinstance(node, ForInStatement):
-            for value in self.evaluate(node.iterable):
-                self.check_type(node.type_specifier, value)
-                self.define_variable(node.identifier, value, node.type_specifier)
-                self.evaluate_block(node.body)
-            return None
-        
-        elif isinstance(node, ForStatement):
-            self.evaluate(node.begin_statement)
-            while self.evaluate(node.condition):
-                self.evaluate_block(node.body)
-                self.evaluate(node.end_statement)
-            return None
-        
-        elif isinstance(node, SwitchStatement):
-            switch_value = self.evaluate(node.expression)
-            default_case = None
-            for case in node.cases:
-                if not isinstance(case, CaseClause):
-                    default_case = case
-                    continue
-                if self.evaluate(case.value) == switch_value:
-                    self.evaluate_block(case.statements)
-                    return
-            if default_case:
-                self.evaluate_block(default_case.statements)
-
-        elif isinstance(node, SignalDeclaration):
-            signal_name = node.signal_name
-            self.define_signal(signal_name)
-            return None
-        
-        elif isinstance(node, EmitStatement):
-            signal_name = node.signal_name
-            self.emit_signal(signal_name)
-        
-        elif isinstance(node, WhenStatement):
-            signal_name = node.signal_name
-            statements = node.statements
-            self.assign_signal(signal_name, statements)
-        
-        elif isinstance(node, WatchStatement):
-            self.assign_watching(node.variable_name, node.statements)
-
-        elif isinstance(node, ListInitialization):
-            values = [self.evaluate(val) for val in node.elements]
-            return Muni_List(values)
-
-        elif isinstance(node, ListAccess):
-            list_object = self.evaluate(node.expression)
-            index = self.evaluate(node.index)
-            return list_object.get_item(index)
-    
-        elif isinstance(node, ListAssignment):
-            list_object = self.evaluate(node.name)
-            index = self.evaluate(node.index)
-            value = self.evaluate(node.value)
-            list_object.set_item(index, value)
-            self.define_variable(node.name, list_object, str(list_object.symbol()))
-
-        elif isinstance(node, Range):
-            start = self.evaluate(node.start)
-            end = self.evaluate(node.end)
-            step = self.evaluate(node.step)
-            return Muni_List([Muni_Int(x) for x in list(range(int(start), int(end) + node.inclusive * (-1)**(int(step)<=0), int(step)))], "INT")
-
-            
-
-        elif self.is_variable(node):
-            return self.get_variable(node)
-
-        elif isinstance(node, str):
-            return Muni_String(node)
-        elif isinstance(node, int):
-            return Muni_Int(node)
-        elif isinstance(node, float):
-            return Muni_Float(node)
-        elif isinstance(node, bool):
-            return Muni_Boolean(node)
-        elif isinstance(node, list):
-            return Muni_List(node)  
-        
-        elif node is None:
-            return None
-        else:
-            raise Exception(f"Unknown node type: {type(node)}")
+                raise Muni_Error(f"Unknown node type: {type(node)}")
+        except Muni_Error as error:
+            print(error)
+            self.is_running = False 
 
     def apply_binary_operator(self, left, right, operator):
         
@@ -320,13 +337,13 @@ class Runtime:
             return left * right
         elif operator == '/':
             if (right == 0):
-                raise Exception("Division by zero")
+                raise Muni_Error("Division by zero")
             
             return left / right
         elif operator == '%':
             return left % right
         else:
-            raise Exception(f"Unknown binary operator: {operator}")
+            raise Muni_Error(f"Unknown binary operator: {operator}")
         
     def apply_logical_operator(self, left, right, operator):
         if operator == '&':
@@ -336,7 +353,7 @@ class Runtime:
         elif operator == '^':
             return left ^ right
         else:
-            raise Exception(f"Unknown logical operator: {operator}")
+            raise Muni_Error(f"Unknown logical operator: {operator}")
     
     def apply_comparison_operator(self, left, right, operator):
         if operator == '>':
@@ -352,21 +369,21 @@ class Runtime:
         elif operator == '!=':
             return left != right
         else:
-            raise Exception(f"Unknown comparison operator: {operator}")
+            raise Muni_Error(f"Unknown comparison operator: {operator}")
         
     def check_type(self, type_specifier, value):
         if type_specifier == 'int':
             if not isinstance(value, Muni_Int):
-                raise Exception(f"Expected an int, got {type(value)}")
+                raise Muni_Error(f"Expected an int, got {type(value)}")
         elif type_specifier == 'float':
             if not isinstance(value, Muni_Float):
-                raise Exception(f"Expected a float, got {type(value)}")
+                raise Muni_Error(f"Expected a float, got {type(value)}")
         elif type_specifier == 'complex':
             if not isinstance(value, Muni_Complex):
-                raise Exception(f"Expected a complex number, got {type(value)}")
+                raise Muni_Error(f"Expected a complex number, got {type(value)}")
         elif type_specifier == 'boolean':
             if not isinstance(value, Muni_Boolean):
-                raise Exception(f"Expected a boolean, got {type(value)}")
+                raise Muni_Error(f"Expected a boolean, got {type(value)}")
 
     def get_function(self, name):
         return self.functions.get(name, None)
@@ -410,7 +427,7 @@ class Runtime:
 
         elif module_path.endswith('.mun'):
             if not os.path.exists(module_path):
-                raise FileNotFoundError(f"File {module_path} not found")
+                raise Muni_Error(f"File {module_path} not found")
 
             
             imported_ast = muni_parser.parse_file(module_path)
@@ -449,7 +466,7 @@ class Runtime:
             try:
                 return Muni_Int(int(value))
             except ValueError:
-                raise Exception(f"Cannot cast {type(value)} to {to_type}")
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         
         elif to_type == 'float':
             if isinstance(value, Muni_Int):
@@ -465,7 +482,7 @@ class Runtime:
             try:
                 return Muni_Float(float(value))
             except ValueError:
-                raise Exception(f"Cannot cast {type(value)} to {to_type}")
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         
 
         elif to_type == 'complex':
@@ -484,7 +501,7 @@ class Runtime:
             try:
                 return Muni_Complex(value.real, value.imag)
             except:
-                raise Exception(f"Cannot cast {type(value)} to {to_type}")
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         
         
 
@@ -503,7 +520,7 @@ class Runtime:
             try:
                 return Muni_Boolean(bool(value))
             except:
-                raise Exception(f"Cannot cast {type(value)} to {to_type}")
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         
         elif to_type == 'string':
             if isinstance(value, Muni_Int):
@@ -521,7 +538,7 @@ class Runtime:
             try:
                 return Muni_String(str(value))
             except:
-                raise Exception(f"Cannot cast {type(value)} to {to_type}")
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         elif 'list' in to_type:
             if '<' in to_type:
                 to_type = ('list', to_type[to_type.index('<') + 1:to_type.index('>')])
@@ -531,7 +548,7 @@ class Runtime:
                 return Muni_List([])
             return Muni_List(value, to_type[1])
         else:
-            raise Exception(f"Cannot cast {type(value)} to {to_type}")
+            raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
     def evaluate_block(self, statements):
         try:
             for statement in statements:
