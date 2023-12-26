@@ -283,18 +283,22 @@ class Runtime:
             elif isinstance(node, ListInitialization):
                 values = [self.evaluate(val) for val in node.elements]
                 return Muni_List(values)
+            
+            elif isinstance(node, DictInitialization):
+                elements = {self.evaluate(key): self.evaluate(value) for key, value in node.elements.items()}
+                return Muni_Dict(elements)
 
-            elif isinstance(node, ListAccess):
-                list_object = self.evaluate(node.expression)
+            elif isinstance(node, ElementAccess):
+                obj = self.evaluate(node.expression)
                 index = self.evaluate(node.index)
-                return list_object.get_item(index)
+                return obj.get_item(index)
         
-            elif isinstance(node, ListAssignment):
-                list_object = self.evaluate(node.name)
+            elif isinstance(node, ElementAccess):
+                obj = self.evaluate(node.name)
                 index = self.evaluate(node.index)
                 value = self.evaluate(node.value)
-                list_object.set_item(index, value)
-                self.define_variable(node.name, list_object, str(list_object.symbol()))
+                obj.set_item(index, value)
+                self.define_variable(node.name, obj, str(obj.symbol()))
 
             elif isinstance(node, Range):
                 start = self.evaluate(node.start)
@@ -546,7 +550,20 @@ class Runtime:
                 return Muni_List(value.value, to_type[1])
             elif isinstance(value, type(None)):
                 return Muni_List([])
-            return Muni_List(value, to_type[1])
+            try:
+                return Muni_List(value, to_type[1])
+            except:
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
+        
+        elif 'dict' in to_type:
+            if isinstance(value, Muni_Dict):
+                return Muni_Dict(value.value, to_type[1], to_type[2])
+            elif isinstance(value, type(None)):
+                return Muni_Dict({})
+            try:
+                return Muni_Dict(value)
+            except:
+                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
         else:
             raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
     def evaluate_block(self, statements):

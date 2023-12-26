@@ -593,19 +593,51 @@ class Muni_List(Muni_Type):
         return f'list<{self.type_specifier}>'
 
 class Muni_Dict(Muni_Type):
-    def __init__(self, dict_values=None):
+    def __init__(self, dict_values=None, key_type_specifier='UNTYPED', value_type_specifier='UNTYPED'):
+        if not isinstance(dict_values, dict):
+            raise Muni_Error(f"Muni_Dict requires a dict value, got {type(dict_values)}")
         super().__init__(dict_values if dict_values is not None else {})
+        self.key_type_specifier = key_type_specifier
+        self.value_type_specifier = value_type_specifier
+        for key, value in dict_values.items():
+            self.check_type(key, value)
 
-    def set_item(self, key, item):
-        if not isinstance(item, Muni_Type):
-            raise Muni_Error("Values must be Muni_Type instances")
-        self.value[key] = item
+    def set_item(self, key, value):
+        self.check_type(key, value)
+        self.value[key] = value
 
     def get_item(self, key):
         return self.value.get(key, Muni_Void())
 
+    def remove_item(self, key):
+        if key in self.value:
+            del self.value[key]
 
-# You can add more methods and functionalities as needed
+    def contains_key(self, key):
+        return Muni_Boolean(key in self.value)
+
+    def keys(self):
+        return Muni_List(list(self.value.keys()))
+
+    def values(self):
+        return Muni_List(list(self.value.values()))
+
+    def items(self):
+        return Muni_List([Muni_List([k, v]) for k, v in self.value.items()])
+    
+    def check_type(self, key, value):
+        if self.key_type_specifier != "UNTYPED" and not isinstance(key, types[self.key_type_specifier]):
+            raise Muni_Error(f"Expected type {types[self.key_type_specifier]}, got {type(key)}")
+        if self.value_type_specifier != "UNTYPED" and not isinstance(value, types[self.value_type_specifier]):
+            raise Muni_Error(f"Expected type {types[self.value_type_specifier]}, got {type(value)}")
+
+    def __iter__(self):
+        return iter(self.value)
+    def __str__(self):
+        return f"{{{' '.join(f'{k}: {v}' for k, v in self.value.items())}}}"
+
+    def symbol():
+        return 'dict'
     
 
 def int_to_base_digit(digit):
