@@ -566,8 +566,10 @@ class Muni_List(Muni_Type):
             raise Muni_Error(f"Muni_List requires a list value, got {type(items)}")
         super().__init__(items if items is not None else [])
         self.type_specifier = type_specifier
-        for item in items:
-            self.check_type(item)
+        if type_specifier != "UNTYPED":
+            for item in items:
+                
+                self.check_type(item)
 
     
     def __add__(self, other):
@@ -600,14 +602,22 @@ class Muni_List(Muni_Type):
     
     
     def check_type(self, item):
-        if self.type_specifier != "UNTYPED" and not isinstance(item, types[self.type_specifier]):
-            raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
+        if not isinstance(item, types[self.type_specifier]):
+            try:
+                item = types[self.type_specifier](item)
+            except:
+                raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
+        
             
     
 
     def __iter__(self):
         return iter(self.value)
     
+    def __len__(self):
+        return len(self.value)
+
+
     def __str__(self):
         try:
             return f"<{types[self.type_specifier].symbol()}>[{', '.join(str(item) for item in self.value)}]"

@@ -21,3 +21,12 @@ def muni_write(filename, content):
 
 def muni_sort(values):
     return sorted(values)
+
+def muni_join(values, sep):
+    return str(sep).join(str(v) for v in values)
+
+def muni_split(value, sep):
+    return str(value).split(str(sep))
+
+def muni_length(value):
+    return len(value)

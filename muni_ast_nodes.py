@@ -2,10 +2,13 @@ from muni_types import *
 
 
 class AstNode:
-    pass
+    def __init__(self, lineno=None, col_offset=None):
+        self.lineno = lineno
+        self.col_offset = col_offset
+
 class StatementList(AstNode):
-    def __init__(self, statements):
-         
+    def __init__(self, statements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.statements = statements
     
     def __str__(self):
@@ -15,8 +18,8 @@ class StatementList(AstNode):
         return self.__str__()
 
 class BinaryOperation(AstNode):
-    def __init__(self, left, operator, right):
-         
+    def __init__(self, left, operator, right, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.left = left
         self.operator = operator
         self.right = right
@@ -28,8 +31,8 @@ class BinaryOperation(AstNode):
         return self.__str__()
 
 class LogicalOperation(AstNode):
-    def __init__(self, left, operator, right):
-         
+    def __init__(self, left, operator, right, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.left = left
         self.operator = operator
         self.right = right
@@ -41,8 +44,8 @@ class LogicalOperation(AstNode):
         return self.__str__()
 
 class ComparisonOperation(AstNode):
-    def __init__(self, left, operator, right):
-         
+    def __init__(self, left, operator, right, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.left = left
         self.operator = operator
         self.right = right
@@ -54,8 +57,8 @@ class ComparisonOperation(AstNode):
         return self.__str__()
 
 class NotOperation(AstNode):
-    def __init__(self, operand):
-         
+    def __init__(self, operand, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.operand = operand
 
     def __str__(self):
@@ -65,8 +68,8 @@ class NotOperation(AstNode):
         return self.__str__()
 
 class UnaryOperation(AstNode):
-    def __init__(self, operand):
-         
+    def __init__(self, operand, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.operand = operand
 
     def __str__(self):
@@ -77,8 +80,8 @@ class UnaryOperation(AstNode):
 
 
 class Number(AstNode):
-    def __init__(self, value):
-         
+    def __init__(self, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         if not isinstance(value, (Muni_Int, Muni_Float, Muni_Complex, Muni_BasedNumber)):
             raise TypeError("Number node requires a Muni number type")
         self.value = value
@@ -90,8 +93,8 @@ class Number(AstNode):
         return self.__str__()
 
 class Boolean(AstNode):
-    def __init__(self, value):
-         
+    def __init__(self, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         if not isinstance(value, Muni_Boolean):
             raise TypeError("Boolean node requires a Muni_Boolean type")
         self.value = value
@@ -103,8 +106,8 @@ class Boolean(AstNode):
         return self.__str__()
 
 class String(AstNode):
-    def __init__(self, value):
-         
+    def __init__(self, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         if not isinstance(value, Muni_String):
             raise TypeError("String node requires a Muni_String type")
         self.value = value
@@ -118,8 +121,8 @@ class String(AstNode):
 
 
 class Assignment(AstNode):
-    def __init__(self, name, value):
-         
+    def __init__(self, name, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
         self.value = value
 
@@ -127,8 +130,8 @@ class Assignment(AstNode):
         return f"Assignment(name='{self.name}', value={self.value})"
 
 class ExpressionAssignment(AstNode):
-    def __init__(self, name, operator, value):
-         
+    def __init__(self, name, operator, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
         self.operator = operator
         self.value = value
@@ -137,8 +140,8 @@ class ExpressionAssignment(AstNode):
         return f"ExpressionAssignment(name='{self.name}', operator='{self.operator}', value={self.value})"
 
 class Declaration(AstNode):
-    def __init__(self, type_specifier, name, value=None):
-         
+    def __init__(self, type_specifier, name, value=None, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.type_specifier = type_specifier
         self.name = name
         self.value = value
@@ -148,8 +151,8 @@ class Declaration(AstNode):
 
 
 class ListInitialization(AstNode):
-    def __init__(self, elements):
-         
+    def __init__(self, elements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.elements = elements
     
     def __str__(self):
@@ -164,8 +167,8 @@ class DictInitialization(AstNode):
         return f"DictInitialization({self.elements})"
 
 class ElementAccess(AstNode):
-    def __init__(self, expression, index):
-         
+    def __init__(self, expression, index, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.expression = expression 
         self.index = index
 
@@ -174,8 +177,8 @@ class ElementAccess(AstNode):
     
 
 class ElementAssignment(AstNode):
-    def __init__(self, name, index, value):
-         
+    def __init__(self, name, index, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
         self.index = index
         self.value = value
@@ -184,8 +187,8 @@ class ElementAssignment(AstNode):
         return f"ElementAssignment(name='{self.name}', index={self.index}, value={self.value})"
 
 class Variable(AstNode):
-    def __init__(self, name):
-         
+    def __init__(self, name, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
 
     def __str__(self):
@@ -193,8 +196,8 @@ class Variable(AstNode):
 
 
 class FunctionCall(AstNode):
-    def __init__(self, name, arguments):
-         
+    def __init__(self, name, arguments, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
         self.arguments = arguments
 
@@ -205,8 +208,8 @@ class FunctionCall(AstNode):
 
 
 class FunctionDeclaration(AstNode):
-    def __init__(self, name, return_type, parameters, body):
-         
+    def __init__(self, name, return_type, parameters, body, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.name = name
         self.return_type = return_type
         self.parameters = parameters
@@ -218,21 +221,21 @@ class FunctionDeclaration(AstNode):
 
 
 class Return(AstNode):
-    def __init__(self, value):
-         
+    def __init__(self, value, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.value = value
 
 
 class ImportStatement(AstNode):
-    def __init__(self, module_path, as_name=None):
-         
+    def __init__(self, module_path, as_name=None, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.module_path = module_path
         self.as_name = as_name
 
 
 class Cast(AstNode):
-    def __init__(self, to_type, expression):
-         
+    def __init__(self, to_type, expression, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.to_type = to_type
         self.expression = expression
 
@@ -241,8 +244,8 @@ class Cast(AstNode):
 
 
 class IfStatement(AstNode):
-    def __init__(self, condition, true_block):
-         
+    def __init__(self, condition, true_block, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.condition = condition
         self.true_block = true_block
     
@@ -251,8 +254,8 @@ class IfStatement(AstNode):
 
 
 class IfElseStatement(AstNode):
-    def __init__(self, condition, true_block, false_block):
-         
+    def __init__(self, condition, true_block, false_block, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.condition = condition
         self.true_block = true_block
         self.false_block = false_block
@@ -262,8 +265,8 @@ class IfElseStatement(AstNode):
 
 
 class WhileStatement(AstNode):
-    def __init__(self, condition, body, nb_iterations=0):
-         
+    def __init__(self, condition, body, nb_iterations=0, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.condition = condition
         self.body = body
         self.nb_iterations = nb_iterations
@@ -273,8 +276,8 @@ class WhileStatement(AstNode):
 
 
 class UntilStatement(AstNode):
-    def __init__(self, condition, body, nb_iterations=0):
-         
+    def __init__(self, condition, body, nb_iterations=0, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.condition = condition
         self.body = body
         self.nb_iterations = nb_iterations
@@ -284,8 +287,8 @@ class UntilStatement(AstNode):
 
 
 class ForInStatement(AstNode):
-    def __init__(self, type_specifier, identifier, iterable, body):
-         
+    def __init__(self, type_specifier, identifier, iterable, body, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.type_specifier = type_specifier
         self.identifier = identifier
         self.iterable = iterable
@@ -296,8 +299,8 @@ class ForInStatement(AstNode):
 
 
 class ForStatement(AstNode):
-    def __init__(self, begin_statement, condition, end_statement, body):
-         
+    def __init__(self, begin_statement, condition, end_statement, body, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.begin_statement = begin_statement
         self.condition = condition
         self.end_statement = end_statement
@@ -309,8 +312,8 @@ class ForStatement(AstNode):
 
 
 class SwitchStatement(AstNode):
-    def __init__(self, expression, cases, default_case):
-         
+    def __init__(self, expression, cases, default_case, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.expression = expression
         self.cases = cases
         self.default_case = default_case
@@ -319,8 +322,8 @@ class SwitchStatement(AstNode):
         return f"SwitchStatement(expression={self.expression}, cases={self.cases}, default_case={self.default_case})"
 
 class CaseClause(AstNode):
-    def __init__(self, value, statements):
-         
+    def __init__(self, value, statements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.value = value
         self.statements = statements
 
@@ -328,8 +331,8 @@ class CaseClause(AstNode):
         return f"CaseClause(value={self.value}, statements={self.statements})"
 
 class DefaultClause(AstNode):
-    def __init__(self, statements):
-         
+    def __init__(self, statements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.statements = statements
 
     def __str__(self):
@@ -337,16 +340,16 @@ class DefaultClause(AstNode):
 
 
 class SignalDeclaration(AstNode):
-    def __init__(self, signal_name):
-         
+    def __init__(self, signal_name, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.signal_name = signal_name
     
     def __str__(self):
         return f"SignalDeclaration(signal_name={self.signal_name})"
 
 class EmitStatement(AstNode):
-    def __init__(self, signal_name):
-         
+    def __init__(self, signal_name, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.signal_name = signal_name
     
     def __str__(self):
@@ -355,16 +358,16 @@ class EmitStatement(AstNode):
 
 
 class WatchStatement(AstNode):
-    def __init__(self, variable_name, statements):
-         
+    def __init__(self, variable_name, statements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.variable_name = variable_name
         self.statements = statements
     
     def __str__(self):
         return f"WatchStatement(variable_name={self.variable_name}, statements={self.statements})"
 class WhenStatement(AstNode):
-    def __init__(self, signal_name, statements):
-         
+    def __init__(self, signal_name, statements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.signal_name = signal_name
         self.statements = statements
     
@@ -373,8 +376,8 @@ class WhenStatement(AstNode):
 
 
 class Range(AstNode):
-    def __init__(self, start, end, step, inclusive=False):
-         
+    def __init__(self, start, end, step, inclusive=False, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.start = start
         self.end = end
         self.step = step
@@ -385,8 +388,8 @@ class Range(AstNode):
 
 
 class ThrowStatement(AstNode):
-    def __init__(self, expression):
-         
+    def __init__(self, expression, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.expression = expression
     
     def __str__(self):

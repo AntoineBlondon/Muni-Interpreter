@@ -121,18 +121,15 @@ def t_BASED_NUMBER(t):
     return t
 
 def t_IMAGINARY_NUMBER(t):
-    r'-?\d+(\.\d+)?[jJ]|-?[jJ]'
+    r'(?<=\d|\s)[+-]?\d*(\.\d+)?[jJ](?=\W|$)'
     # Extract the numerical part and create an imaginary number representation
-    if len(t.value) == 1:
-        t.value = Muni_Complex(0,1)
-        return t
-    if len(t.value) == 2 and t.value.startswith('-'):  # For cases like "-j"
-        t.value = Muni_Complex(0, -1)
-        return t
-    num_part = t.value[:-1]  # Remove the 'j'
-    t.value = Muni_Complex(0,float(num_part))  # Assuming Muni_Imaginary is a class to handle imaginary numbers
+    num_part = t.value.rstrip('jJ')  # Remove the 'j'
+    if num_part == '' or num_part == '+':
+        num_part = '1'
+    elif num_part == '-':
+        num_part = '-1'
+    t.value = Muni_Complex(0, float(num_part))
     return t
-
 # Literals
 def t_NUMBER(t):
     r'-?\d+(\.\d+)?([eE][-+]?\d+)?'
