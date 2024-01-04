@@ -189,7 +189,7 @@ class Runtime:
             
             elif isinstance(node, NotOperation):
                 value = self.evaluate(node.operand)
-                return not value
+                return Muni_Boolean(not value)
             
             elif isinstance(node, UnaryOperation):
                 value = self.evaluate(node.operand)

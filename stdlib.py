@@ -6,8 +6,10 @@ def muni_print(value):
 
 
 def muni_type(value):
-    return type(value).symbol()
-
+    try:
+        return type(value).symbol()
+    except:
+        return type(value)
 
 def muni_input(prompt):
     return Muni_String(input(prompt))
