@@ -159,8 +159,8 @@ class ListInitialization(AstNode):
         return f"ListInitialization({self.elements})"
 
 class DictInitialization(AstNode):
-    def __init__(self, elements):
-        super().__init__()
+    def __init__(self, elements, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
         self.elements = elements
 
     def __str__(self):
