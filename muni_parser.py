@@ -3,6 +3,7 @@ from muni_lexer import tokens, keywords
 from muni_ast_nodes import *
 
 precedence = (
+    ('left', 'RARROW'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'MUL', 'DIV'),
     ('left', 'AMPERSAND', 'PIPE'),
@@ -119,7 +120,7 @@ def p_expression_paren(p):
 def p_casting(p):
     '''expression : expression RARROW type_specifier
                   | expression RARROW IDENTIFIER'''
-    p[0] = Cast(to_type=p[1], expression=p[3], lineno=p.lineno(1))
+    p[0] = Cast(to_type=p[3], expression=p[1], lineno=p.lineno(1))
 
 
 

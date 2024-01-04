@@ -272,7 +272,7 @@ class WhileStatement(AstNode):
         self.nb_iterations = nb_iterations
 
     def __str__(self):
-        return f"WhileStatement(condition={self.condition}, body={self.body}, nb_iterations={self.nb_iterations})"
+        return f"WhileStatement(condition={self.condition}, body={','.join([str(statement) for statement in self.body])}, nb_iterations={self.nb_iterations})"
 
 
 class UntilStatement(AstNode):
@@ -283,7 +283,7 @@ class UntilStatement(AstNode):
         self.nb_iterations = nb_iterations
 
     def __str__(self):
-        return f"UntilStatement(condition={self.condition}, body={self.body}, nb_iterations={self.nb_iterations})"
+        return f"UntilStatement(condition={self.condition}, body={','.join([str(statement) for statement in self.body])}, nb_iterations={self.nb_iterations})"
 
 
 class ForInStatement(AstNode):
@@ -295,7 +295,7 @@ class ForInStatement(AstNode):
         self.body = body
     
     def __str__(self):
-        return f"ForInStatement(type_specifier={self.type_specifier}, identifier={self.identifier}, iterable={self.iterable}, body={self.body})"
+        return f"ForInStatement(type_specifier={self.type_specifier}, identifier={self.identifier}, iterable={self.iterable}, body={','.join([str(statement) for statement in self.body])})"
 
 
 class ForStatement(AstNode):
@@ -307,7 +307,7 @@ class ForStatement(AstNode):
         self.body = body
 
     def __str__(self):
-        return f"ForStatement(begin_statement={self.begin_statement}, condition={self.condition}, end_statement={self.end_statement}, body={self.body})"
+        return f"ForStatement(begin_statement={self.begin_statement}, condition={self.condition}, end_statement={self.end_statement}, body={','.join([str(statement) for statement in self.body])})"
     
 
 
@@ -328,7 +328,7 @@ class CaseClause(AstNode):
         self.statements = statements
 
     def __str__(self):
-        return f"CaseClause(value={self.value}, statements={self.statements})"
+        return f"CaseClause(value={self.value}, statements={','.join([str(statement) for statement in self.statements])})"
 
 class DefaultClause(AstNode):
     def __init__(self, statements, lineno=None, col_offset=None):
@@ -336,7 +336,7 @@ class DefaultClause(AstNode):
         self.statements = statements
 
     def __str__(self):
-        return f"DefaultClause(statements={self.statements})"
+        return f"DefaultClause(statements={','.join([str(statement) for statement in self.statements])})"
 
 
 class SignalDeclaration(AstNode):
@@ -364,7 +364,7 @@ class WatchStatement(AstNode):
         self.statements = statements
     
     def __str__(self):
-        return f"WatchStatement(variable_name={self.variable_name}, statements={self.statements})"
+        return f"WatchStatement(variable_name={self.variable_name}, statements={','.join([str(statement) for statement in self.statements])})"
 class WhenStatement(AstNode):
     def __init__(self, signal_name, statements, lineno=None, col_offset=None):
         super().__init__(lineno, col_offset)
@@ -372,7 +372,7 @@ class WhenStatement(AstNode):
         self.statements = statements
     
     def __str__(self):
-        return f"WhenStatement(signal_name={self.signal_name}, statements={self.statements})"
+        return f"WhenStatement(signal_name={self.signal_name}, statements={','.join([str(statement) for statement in self.statements])})"
 
 
 class Range(AstNode):
