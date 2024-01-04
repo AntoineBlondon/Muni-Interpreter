@@ -1,6 +1,7 @@
 from math import sqrt
 from muni_error import *
 from muni_context_manager import *
+from copy import deepcopy
 class Muni_Type:
     def __init__(self, value):
         self._value = value
@@ -23,6 +24,9 @@ class Muni_Type:
         name = runtime.get_name(self)
         if runtime.is_watched(name):
             runtime.execute_watch(name)
+    
+    def copy(self):
+        return deepcopy(self)
 
     def __str__(self):
         return str(self.value)
@@ -530,6 +534,11 @@ class Muni_String(Muni_Type):
         raise Muni_Error("Unsupported operand type(s) for +: 'Muni_String' and '{}'".format(type(other).__name__))
     # Add more methods specific to string operations
 
+    def __eq__(self, other):
+        if isinstance(other, Muni_String):
+            return Muni_Boolean(self.value == other.value)
+        raise Muni_Error("Unsupported operand type(s) for ==: 'Muni_String' and '{}'".format(type(other).__name__))
+
     def __str__(self):
         return self.value
     
@@ -568,23 +577,24 @@ class Muni_List(Muni_Type):
         self.type_specifier = type_specifier
         if type_specifier != "UNTYPED":
             for item in items:
-                
-                self.check_type(item)
-
+                try:
+                    self.check_type(item)
+                except:
+                    self.cast_items()
     
     def __add__(self, other):
         if isinstance(other, Muni_List):
             return Muni_List(self.value + other.value, self.type_specifier)
     
         try:
-            return Muni_List(self.value + [other], self.type_specifier)
-        except:
+            return Muni_List(self.value + [other.copy()], self.type_specifier)
+        except Exception as e:
             raise Muni_Error("Unsupported operand type(s) for +: 'Muni_List' and '{}'".format(type(other).__name__))
 
     def __sub__(self, other):
         try:
-            return self.value.remove(other)
-        except:
+            return Muni_List([item for item in self.value if item != other], self.type_specifier)
+        except Exception as e:
             raise Muni_Error("Unsupported operand type(s) for -: 'Muni_List' and '{}'".format(type(other).__name__))
 
     def append(self, item):
@@ -613,11 +623,14 @@ class Muni_List(Muni_Type):
     
     def check_type(self, item):
         if not isinstance(item, types[self.type_specifier]):
-            try:
-                item = types[self.type_specifier](item)
-            except:
-                raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
-        
+            raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
+    def cast_items(self):
+        my_type = types[self.type_specifier]
+
+        for i in range(len(self.value)):
+            if not isinstance(self.value[i], my_type):
+                self.value[i] = my_type(self.value[i])
+
             
     def __list__(self):
         return self.value

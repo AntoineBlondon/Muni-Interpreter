@@ -49,9 +49,9 @@ class Runtime:
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
             try:
-                self.current_scope()[name].value = value.value
+                self.scopes[self.get_scope(name)][name].value = value.value
             except:
-                self.current_scope()[name] = value
+                self.scopes[self.get_scope(name)][name] = value
         
 
     def get_variable(self, name):
