@@ -617,6 +617,9 @@ class Runtime:
                 return int(value)
             except:
                 raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
+        
+        elif to_type == 'py_str':
+            return str(value)
         else:
             raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
     def evaluate_block(self, statements):

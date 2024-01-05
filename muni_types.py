@@ -537,10 +537,15 @@ class Muni_String(Muni_Type):
     def __eq__(self, other):
         if isinstance(other, Muni_String):
             return Muni_Boolean(self.value == other.value)
+        elif isinstance(other, str):
+            return Muni_Boolean(self.value == other)
         raise Muni_Error("Unsupported operand type(s) for ==: 'Muni_String' and '{}'".format(type(other).__name__))
 
     def __str__(self):
         return self.value
+    
+    def __int__(self):
+        return int(self.value)
     
     def __hash__(self):
         return hash(self.value)
