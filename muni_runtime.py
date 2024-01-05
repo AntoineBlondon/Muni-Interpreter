@@ -67,11 +67,13 @@ class Runtime:
         raise Muni_Error(f"Variable '{name}' not found")
     
     def is_variable(self, name):
-        for scope in reversed(self.scopes):
-            if name in scope:
-                return True
-        return False
-    
+        try:
+            for scope in reversed(self.scopes):
+                if name in scope:
+                    return True
+            return False
+        except:
+            return False
     def define_signal(self, signal_name):
         if signal_name in self.signals:
             raise Muni_Error(f"Signal Error: {signal_name} already a signal.")
@@ -447,16 +449,8 @@ class Runtime:
 
             
             imported_ast = muni_parser.parse_file(module_path)
-            # Evaluate the imported AST with a temporary scope for functions
-            original_functions = self.functions.copy()
-            self.functions = {}
             for statement in imported_ast.statements:
                 self.evaluate(statement)
-
-            # Restore original functions and update with imported functions using alias
-            imported_functions = self.functions
-            self.functions = original_functions
-            self.update_functions_with_alias(imported_functions, alias)
         elif module_path.endswith(':lib'):
             library_name = module_path[:-4]
             library_path = os.path.join(os.path.dirname(__file__), "libraries", f"lib_{library_name}.py")

@@ -203,7 +203,7 @@ class FunctionCall(AstNode):
 
     def __str__(self):
         args = ", ".join(map(str, self.arguments))
-        return f"FunctionCall({self.name}, [{args}])"
+        return f"FunctionCall(name={self.name}, args=[{args}])"
 
 
 
@@ -217,7 +217,7 @@ class FunctionDeclaration(AstNode):
 
     def __str__(self):
         params = ", ".join([f"{ptype} {pname}" for ptype, pname in self.parameters])
-        return f"FunctionDeclaration({self.name}, {self.return_type}, [{params}], {self.body})"
+        return f"FunctionDeclaration(name={self.name}, return_type={self.return_type}, params=[{params}], body=[{', '.join([str(x) for x in self.body])}])"
 
 
 class Return(AstNode):
