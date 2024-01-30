@@ -556,6 +556,16 @@ class Muni_String(Muni_Type):
     def __int__(self):
         return int(self.value)
     
+
+    def get_item(self, index):
+        return self.value[int(index)]
+
+    def __getitem__(self, index):
+        return self.get_item(index)
+    
+    def __setitem__(self, index, obj):
+        self.value[index] = obj
+    
     def __hash__(self):
         return hash(self.value)
     
