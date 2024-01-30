@@ -14,5 +14,5 @@ def get(url, headers=None, params=None, data=None, timeout=10):
 
 
 def post(url, data=None):
-    return json.loads(requests.post(url, json=data).text)
+    return json.loads(requests.post(url, json=data.to_standard_type()).text)
     

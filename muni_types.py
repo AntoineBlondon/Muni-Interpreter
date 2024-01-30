@@ -28,6 +28,15 @@ class Muni_Type:
     def copy(self):
         return deepcopy(self)
 
+    def to_standard_type(self):
+        if isinstance(self, Muni_Dict):
+            return {key.to_standard_type(): value.to_standard_type() for key, value in self.items()}
+        elif isinstance(self, Muni_String):
+            return str(self)
+        # Add similar conversions for other custom types if necessary
+        else:
+            return self
+
     def __str__(self):
         return str(self.value)
 
@@ -673,6 +682,13 @@ class Muni_Dict(Muni_Type):
 
     def get_item(self, key):
         return self.value.get(key, Muni_Void())
+    
+    def __getitem__(self, key):
+        return self.get_item(key)
+
+    def __setitem__(self, key, value):
+        self.set_item(key, value)
+
 
     def remove_item(self, key):
         if key in self.value:
@@ -695,11 +711,17 @@ class Muni_Dict(Muni_Type):
             raise Muni_Error(f"Expected type {types[self.key_type_specifier]}, got {type(key)}")
         if self.value_type_specifier != "UNTYPED" and not isinstance(value, types[self.value_type_specifier]):
             raise Muni_Error(f"Expected type {types[self.value_type_specifier]}, got {type(value)}")
+    
+    
+
 
     def __iter__(self):
         return iter(self.value)
     def __str__(self):
         return f"{{{' '.join(f'{k}: {v}' for k, v in self.value.items())}}}"
+
+    def __dict__(self):
+        return self.value
 
     def symbol():
         return 'dict'
