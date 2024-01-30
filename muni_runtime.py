@@ -335,7 +335,9 @@ class Runtime:
             elif isinstance(node, bool):
                 return Muni_Boolean(node)
             elif isinstance(node, list):
-                return Muni_List(node)  
+                return Muni_List(node)
+            elif isinstance(node, dict):
+                return Muni_Dict(node)
             
             elif node is None:
                 return None
