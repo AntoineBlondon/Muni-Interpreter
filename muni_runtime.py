@@ -408,6 +408,7 @@ class Runtime:
 
     def call_function(self, function, arguments):
         # Push a new scope
+        stable_function = deepcopy(self.functions[function.name])
         self.push_scope()
 
         # Assign arguments to parameters in the new scope
@@ -425,7 +426,7 @@ class Runtime:
 
         # Pop the scope
         self.pop_scope()
-
+        self.functions[function.name] = stable_function
         return self.evaluate(result)
     
     def register_stdlib_functions(self):

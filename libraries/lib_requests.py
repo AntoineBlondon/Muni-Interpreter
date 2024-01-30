@@ -10,4 +10,9 @@ from muni_types import *
 
 
 def get(url, headers=None, params=None, data=None, timeout=10):
-    return Muni_List(json.loads(requests.get(url, headers=headers, params=params, data=data, timeout=timeout).text))
+    return json.loads(requests.get(url, headers=headers, params=params, data=data, timeout=timeout).text)
+
+
+def post(url, data=None):
+    return json.loads(requests.post(url, json=data).text)
+    
