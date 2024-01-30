@@ -625,6 +625,13 @@ class Muni_List(Muni_Type):
     def set_item(self, index, item):
         self.check_type(item)
         self.value[int(index)] = item
+
+    def __getitem__(self, index):
+        return self.get_item(index)
+
+    def __setitem__(self, index, value):
+        self.set_item(index, value)
+
     
     def insert(self, index, item):
         self.check_type(item)
