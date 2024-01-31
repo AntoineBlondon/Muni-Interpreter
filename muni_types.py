@@ -336,9 +336,24 @@ class Muni_Complex(Muni_Type):
     def __add__(self, other):
         if isinstance(other, Muni_Complex):
             return Muni_Complex(self.real + other.real, self.imag + other.imag)
+        elif isinstance(other, Muni_Int):
+            return Muni_Complex(self.real + other.value, self.imag)
         elif isinstance(other, Muni_String):
             return Muni_String(str(self) + other.value)
         raise Muni_Error("Unsupported operand type(s) for +: 'Muni_Complex' and '{}'".format(type(other).__name__))
+    
+    def __sub__(self, other):
+        return self.__add__(-other)
+    
+    def __mul__(self, other):
+        if isinstance(other, Muni_Complex):
+            return Muni_Complex(self.real * other.real - self.imag * other.imag, self.real * other.imag + self.imag * other.real)
+        elif isinstance(other, Muni_Int):
+            return Muni_Complex(self.real * other.value, self.imag * other.value)
+        elif isinstance(other, Muni_Float):
+            return Muni_Complex(self.real * other.value, self.imag * other.value)
+        raise Muni_Error("Unsupported operand type(s) for *: 'Muni_Complex' and '{}'".format(type(other).__name__))
+
     def modulus(self):
         return Muni_Float(sqrt(self.real**2 + self.imag**2))
     
