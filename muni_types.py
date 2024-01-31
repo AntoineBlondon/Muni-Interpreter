@@ -13,8 +13,6 @@ class Muni_Type:
 
     @value.setter
     def value(self, new_value):
-        runtime = ContextManager().get_runtime()
-        name = runtime.get_name(self)
         if new_value != self.value:
             self._value = new_value
             self.on_change()
@@ -192,7 +190,7 @@ class Muni_BasedNumber(Muni_Type):
         if base < 2 or base > 36:
             raise Muni_Error("Base must be between 2 and 36")
         self.base = base
-        self.value = self._convert_to_decimal(value, base)
+        super().__init__(self._convert_to_decimal(value, base))
 
     def _convert_to_decimal(self, value, base):
         try:
