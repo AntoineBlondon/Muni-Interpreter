@@ -36,11 +36,11 @@ Muni language offers a variety of data types to cater to different needs in prog
 
 ## Advanced Data Types
 
-### Lists (`list`) Not implemented yet
+### Lists (`list`)
 - Represents a collection of elements.
 - Example: `list<int> g = [1, 2, 3];`
 
-### Dictionaries (`dict`) Not implemented yet
+### Dictionaries (`dict`)
 - Represents a collection of key-value pairs.
 - Example: `dict<string, int> h = {"one": 1, "two": 2};`
 
