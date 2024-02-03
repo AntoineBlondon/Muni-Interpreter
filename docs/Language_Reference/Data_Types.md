@@ -58,8 +58,8 @@ print(var); # displays the int value 3
 ## Type Conversion
 Muni supports explicit type conversions to ensure proper handling of different data types. 
 
-- **Casting Example**: `int j = int -> 3.14;`
-- **Conversion Functions**: `string k = string -> 10;`
+- **Casting Example**: `int j = 3.14 -> int;`
+- **Conversion Functions**: `string k = 10 -> string;`
 
 ## Special Considerations
 - **Type Safety**: Muni enforces type safety but allows flexibility with the untyped (`?`) type.
