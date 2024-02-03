@@ -51,12 +51,9 @@ def create_app(*args):
         button_text = "Yes"
         BINDINGS = [
         ]
-        CSS = """
-        Screen {
-            align: center middle;
-            width: auto;
-        }
-        """
+        CSS = base_css()
+        
+        
         def __init__(self):
             super().__init__()
             if len(args) > 0: # if there is an argument
@@ -96,6 +93,21 @@ def create_app(*args):
     #apps[app_id] = BasicApp()
     
     return BasicApp()
+
+
+
+def base_css():
+    return """
+    Screen {
+        align: center middle;
+        width: auto;
+    }
+    """
+
+def set_css(app_instance, css):
+    if app_instance:
+        app_instance.CSS = css
+
 
 def run_app(app):
     app_instance = app
