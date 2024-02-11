@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define the installation directory
+# Define t  he installation directory
 INSTALL_DIR="$HOME/.mun_interpreter"
 
 # Function to check if a command exists
@@ -8,9 +8,17 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to install Python dependencies
+install_python_dependencies() {
+    echo "Installing necessary Python packages..."
+    pip install -r "$INSTALL_DIR/Muni-Interpreter/requirements.txt"
+}
+
+
 # Function to install or update Muni interpreter
 install_or_update_muni() {
     if [ ! -d "$INSTALL_DIR/Muni-Interpreter/.git" ]; then
+        install_python_dependencies
         echo "Installing the Muni interpreter..."
         mkdir -p "$INSTALL_DIR"
         git clone https://github.com/AntoineBlondon/Muni-Interpreter.git "$INSTALL_DIR/Muni-Interpreter"
@@ -42,6 +50,12 @@ if ! command_exists python3; then
     exit 1
 fi
 
+if ! command_exists pip; then
+    echo "Error: pip is not installed. Please install pip and try again."
+    exit 1
+fi
+
+
 # Install or update based on passed arguments
 if [ "$1" == "--update" ]; then
     install_or_update_muni "--update"
@@ -50,3 +64,5 @@ else
     install_or_update_muni  
     python3 "$INSTALL_DIR/Muni-Interpreter/run.py" "$@"
 fi
+
+# Post-installation message

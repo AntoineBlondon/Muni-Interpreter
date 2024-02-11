@@ -2,6 +2,7 @@ from muni_types import *
 from muni_ast_nodes import *
 from muni_error import *
 import importlib
+import importlib.util
 import os
 import sys
 import muni_parser 
