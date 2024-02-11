@@ -18,10 +18,10 @@ install_python_dependencies() {
 # Function to install or update Muni interpreter
 install_or_update_muni() {
     if [ ! -d "$INSTALL_DIR/Muni-Interpreter/.git" ]; then
-        install_python_dependencies
         echo "Installing the Muni interpreter..."
         mkdir -p "$INSTALL_DIR"
         git clone https://github.com/AntoineBlondon/Muni-Interpreter.git "$INSTALL_DIR/Muni-Interpreter"
+        install_python_dependencies
     elif [ "$1" == "--update" ]; then
         echo "Checking for updates to the Muni interpreter..."
         cd "$INSTALL_DIR/Muni-Interpreter" || exit
