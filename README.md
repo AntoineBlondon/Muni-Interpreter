@@ -235,12 +235,6 @@ This overview provides a glimpse into the syntax and capabilities of the Muni pr
 
 ## Documentation
 
-For the Documentation section of your README, it's essential to guide users on how to access and utilize the documentation effectively. Here's a draft that you can adjust according to the specific structure and contents of your `docs` folder:
-
----
-
-## Documentation
-
 The Muni Language Interpreter comes with comprehensive documentation to help you understand and make the most out of Muni. All documentation is located in the [docs](docs/) folder of the repository. Here’s how you can use the documentation to your advantage:
 
 ### Accessing Documentation
@@ -256,12 +250,11 @@ The Muni Language Interpreter comes with comprehensive documentation to help you
 - `Standard_Library/Functions.md`: Documentation on the standard library functions available in Muni.
 - `Contributing.md`: Guidelines on how to contribute to the Muni project, including code contributions, documentation improvements, and bug reporting.
 
-
 ---
 
 ## Contributing to Muni
 
-[Encourage and guide contributors on how they can help improve the Muni Language Interpreter, including bug reporting and feature suggestions.]
+[This section has not been written yet]
 
 ---
 
