@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define t  he installation directory
+# Define the installation directory
 INSTALL_DIR="$HOME/.mun_interpreter"
 
 # Function to check if a command exists
@@ -50,5 +50,3 @@ else
     install_or_update_muni  
     python3 "$INSTALL_DIR/Muni-Interpreter/run.py" "$@"
 fi
-
-# Post-installation message
