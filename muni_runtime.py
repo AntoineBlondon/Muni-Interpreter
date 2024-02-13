@@ -618,7 +618,7 @@ class Runtime:
             elif isinstance(value, type(None)):
                 return Muni_List([])
             elif isinstance(value, Muni_Void):
-                return Muni_List([])
+                return Muni_List([], to_type[1])
             try:
                 return Muni_List(value, to_type[1])
             except:
@@ -630,7 +630,7 @@ class Runtime:
             elif isinstance(value, type(None)):
                 return Muni_Dict({})
             elif isinstance(value, Muni_Void):
-                return Muni_Dict({})
+                return Muni_Dict({}, to_type[1], to_type[2])
             try:
                 return Muni_Dict(value)
             except:
