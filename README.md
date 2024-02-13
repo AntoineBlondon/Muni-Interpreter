@@ -92,7 +92,7 @@ Muni supports several data types, including:
 - Strings (`string`)
 - Untyped (`?`)
 
-See [Data Types](docs/Language_Reference/Data_Types.md) for more details.
+See [Data Types](https://github.com/AntoineBlondon/Muni-Interpreter/wiki/Data-Types) for more details.
 
 ### Variables
 
