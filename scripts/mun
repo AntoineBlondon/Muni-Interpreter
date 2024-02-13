@@ -8,12 +8,20 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to install Python dependencies
+install_python_dependencies() {
+    echo "Installing necessary Python packages..."
+    pip install -r "$INSTALL_DIR/Muni-Interpreter/requirements.txt"
+}
+
+
 # Function to install or update Muni interpreter
 install_or_update_muni() {
     if [ ! -d "$INSTALL_DIR/Muni-Interpreter/.git" ]; then
         echo "Installing the Muni interpreter..."
         mkdir -p "$INSTALL_DIR"
         git clone https://github.com/AntoineBlondon/Muni-Interpreter.git "$INSTALL_DIR/Muni-Interpreter"
+        install_python_dependencies
     elif [ "$1" == "--update" ]; then
         echo "Checking for updates to the Muni interpreter..."
         cd "$INSTALL_DIR/Muni-Interpreter" || exit
@@ -41,6 +49,12 @@ if ! command_exists python3; then
     echo "Error: Python 3 is not installed. Please install Python 3 and try again."
     exit 1
 fi
+
+if ! command_exists pip; then
+    echo "Error: pip is not installed. Please install pip and try again."
+    exit 1
+fi
+
 
 # Install or update based on passed arguments
 if [ "$1" == "--update" ]; then
