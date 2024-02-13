@@ -504,6 +504,8 @@ class Runtime:
                 return Muni_Int(int(value.value))
             elif isinstance(value, type(None)):
                 return Muni_Int(0)
+            elif isinstance(value, Muni_Void):
+                return Muni_Int(0)
             
             try:
                 return Muni_Int(int(value))
@@ -520,6 +522,8 @@ class Runtime:
             elif isinstance(value, Muni_Boolean):
                 return Muni_Float(value.value)
             elif isinstance(value, type(None)):
+                return Muni_Float(0)
+            elif isinstance(value, Muni_Void):
                 return Muni_Float(0)
             try:
                 return Muni_Float(float(value))
@@ -540,6 +544,8 @@ class Runtime:
                 return Muni_Complex(value.value, 0)
             elif isinstance(value, type(None)):
                 return Muni_Complex(0, 0)
+            elif isinstance(value, Muni_Void):
+                return Muni_Complex(0, 0)
             try:
                 return Muni_Complex(value.real, value.imag)
             except:
@@ -555,6 +561,8 @@ class Runtime:
             elif isinstance(value, Muni_Boolean):
                 return Muni_BasedNumber(value.value, 10)
             elif isinstance(value, type(None)):
+                return Muni_BasedNumber(0, 10)
+            elif isinstance(value, Muni_Void):
                 return Muni_BasedNumber(0, 10)
             try:
                 return Muni_BasedNumber(value)
@@ -573,7 +581,8 @@ class Runtime:
                 return value
             elif isinstance(value, type(None)):
                 return Muni_Boolean(False)
-            
+            elif isinstance(value, Muni_Void):
+                return Muni_Boolean(False)
             try:
                 return Muni_Boolean(bool(value))
             except:
@@ -592,6 +601,8 @@ class Runtime:
                 return value
             elif isinstance(value, type(None)):
                 return Muni_String("")
+            elif isinstance(value, Muni_Void):
+                return Muni_String("")
             try:
                 return Muni_String(str(value))
             except:
@@ -603,6 +614,8 @@ class Runtime:
                 return Muni_List(value.value, to_type[1])
             elif isinstance(value, type(None)):
                 return Muni_List([])
+            elif isinstance(value, Muni_Void):
+                return Muni_List([])
             try:
                 return Muni_List(value, to_type[1])
             except:
@@ -612,6 +625,8 @@ class Runtime:
             if isinstance(value, Muni_Dict):
                 return Muni_Dict(value.value, to_type[1], to_type[2])
             elif isinstance(value, type(None)):
+                return Muni_Dict({})
+            elif isinstance(value, Muni_Void):
                 return Muni_Dict({})
             try:
                 return Muni_Dict(value)
@@ -632,6 +647,8 @@ class Runtime:
             elif isinstance(value, Muni_Boolean):
                 return int(value.value)
             elif isinstance(value, type(None)):
+                return 0
+            elif isinstance(value, Muni_Void):
                 return 0
             try:
                 return int(value)
