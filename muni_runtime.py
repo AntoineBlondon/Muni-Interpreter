@@ -213,7 +213,7 @@ class Runtime:
             
             elif isinstance(node, FunctionDeclaration):
                 self.define_function(node)
-                return None
+                return Muni_Void()
 
             elif isinstance(node, ImportStatement):
                 return self.handle_import(node)
@@ -229,7 +229,7 @@ class Runtime:
                 condition_value = self.evaluate(node.condition)
                 if condition_value:
                     return self.evaluate_block(node.true_block)
-                return None
+                return Muni_Void()
 
             elif isinstance(node, IfElseStatement):
                 condition_value = self.evaluate(node.condition)
@@ -237,35 +237,35 @@ class Runtime:
                     self.evaluate_block(node.true_block)
                 else:
                     self.evaluate_block(node.false_block)
-                return None
+                return Muni_Void()
 
             elif isinstance(node, WhileStatement):
                 for i in range(int(node.nb_iterations)):
                     self.evaluate_block(node.body)
                 while self.evaluate(node.condition):
                     self.evaluate_block(node.body)
-                return None
+                return Muni_Void()
             
             elif isinstance(node, UntilStatement):
                 for i in range(int(node.nb_iterations)):
                     self.evaluate_block(node.body)
                 while not self.evaluate(node.condition):
                     self.evaluate_block(node.body)
-                return None
+                return Muni_Void()
             
             elif isinstance(node, ForInStatement):
                 for value in self.evaluate(node.iterable):
                     self.check_type(node.type_specifier, value)
                     self.define_variable(node.identifier, value, node.type_specifier)
                     self.evaluate_block(node.body)
-                return None
+                return Muni_Void()
             
             elif isinstance(node, ForStatement):
                 self.evaluate(node.begin_statement)
                 while self.evaluate(node.condition):
                     self.evaluate_block(node.body)
                     self.evaluate(node.end_statement)
-                return None
+                return Muni_Void()
             
             elif isinstance(node, SwitchStatement):
                 switch_value = self.evaluate(node.expression)
@@ -276,26 +276,30 @@ class Runtime:
                         continue
                     if self.evaluate(case.value) == switch_value:
                         self.evaluate_block(case.statements)
-                        return
+                        return Muni_Void()
                 if default_case:
                     self.evaluate_block(default_case.statements)
+                return Muni_Void()
 
             elif isinstance(node, SignalDeclaration):
                 signal_name = node.signal_name
                 self.define_signal(signal_name)
-                return None
+                return Muni_Void()
             
             elif isinstance(node, EmitStatement):
                 signal_name = node.signal_name
                 self.emit_signal(signal_name)
+                return Muni_Void()
             
             elif isinstance(node, WhenStatement):
                 signal_name = node.signal_name
                 statements = node.statements
                 self.assign_signal(signal_name, statements)
+                return Muni_Void()
             
             elif isinstance(node, WatchStatement):
                 self.assign_watching(node.variable_name, node.statements)
+                return Muni_Void()
 
             elif isinstance(node, ListInitialization):
                 values = [self.evaluate(val) for val in node.elements]
@@ -316,6 +320,7 @@ class Runtime:
                 value = self.evaluate(node.value)
                 obj.set_item(index, value)
                 self.define_variable(node.name, obj, str(obj.symbol()))
+                return Muni_Void()
 
             elif isinstance(node, Range):
                 start = self.evaluate(node.start)
@@ -343,7 +348,7 @@ class Runtime:
                 return Muni_Dict(node)
             
             elif node is None:
-                return None
+                return Muni_Void()
             else:
                 raise Muni_Error(f"Unknown node type: {type(node)}")
         except Muni_Error as error:
