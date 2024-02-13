@@ -40,15 +40,13 @@ class Runtime:
     def current_scope(self):
         return self.scopes[-1]
 
-    def define_variable(self, name, value, type_specifier=None):
+    def define_variable(self, name, value, type_specifier="void"):
         if not self.is_variable(name):
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
                 self.check_type(type_specifier, value)
             self.current_scope()[name] = value
         else:
-            if type_specifier == 'void':
-                return
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
             try:
@@ -639,8 +637,7 @@ class Runtime:
                 raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
             
         elif to_type == 'void':
-            if isinstance(value, type(None)):
-                return Muni_Void()
+            return Muni_Void()
 
         elif to_type == 'py_int':
             if isinstance(value, Muni_Int):
