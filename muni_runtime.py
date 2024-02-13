@@ -46,6 +46,8 @@ class Runtime:
                 self.check_type(type_specifier, value)
             self.current_scope()[name] = value
         else:
+            if type_specifier == 'void':
+                return
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
             try:
@@ -488,7 +490,8 @@ class Runtime:
                 self.functions[func_name] = imported_functions[func_name]
              
     def perform_cast(self, to_type, value):
-        # Example casting logic
+        
+        
         if to_type == 'int':
             if isinstance(value, Muni_Int):
                 return value
@@ -614,6 +617,10 @@ class Runtime:
             except:
                 raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
             
+        elif to_type == 'void':
+            if isinstance(value, type(None)):
+                return Muni_Void()
+
         elif to_type == 'py_int':
             if isinstance(value, Muni_Int):
                 return value.value
