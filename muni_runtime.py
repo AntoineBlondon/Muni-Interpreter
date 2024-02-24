@@ -200,6 +200,8 @@ class Runtime:
 
             elif isinstance(node, FunctionCall):
                 function = self.get_function(node.name)
+                if function is None:
+                    raise Muni_Error(f"Function Error: {node.name} not a function.")
                 if callable(function):
                     arguments = [self.evaluate(arg) for arg in node.arguments]
                     if self.is_running == False: return
@@ -415,6 +417,7 @@ class Runtime:
         return self.functions.get(name, None)
 
     def call_function(self, function, arguments):
+
         # Push a new scope
         stable_function = deepcopy(self.functions[function.name])
         self.push_scope()
@@ -451,6 +454,11 @@ class Runtime:
             module_path = module_path[:-3]
             imported_module = importlib.import_module(module_path)
             self.update_functions_with_alias(imported_module.__dict__, alias)
+        elif module_path.endswith('.py'):
+            if not os.path.exists(module_path):
+                raise Muni_Error(f"File {module_path} not found")
+            imported_file = self.import_from_absolute_path(module_path)
+            self.update_functions_with_alias(imported_file.__dict__, alias)
 
         elif module_path.endswith('.mun'):
             if not os.path.exists(module_path):
