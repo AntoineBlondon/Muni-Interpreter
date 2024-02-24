@@ -440,7 +440,6 @@ class Runtime:
             for stmt in function.body:
                 self.evaluate(stmt)
         except ReturnException as e:
-            print("returned from function")
             result = e.value
         finally:
             # Pop the scope
