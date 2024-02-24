@@ -753,8 +753,8 @@ class Muni_Dict(Muni_Type):
     def __dict__(self):
         return self.value
 
-    def symbol():
-        return 'dict'
+    def symbol(self):
+        return 'dict<{}, {}>'.format(self.key_type_specifier, self.value_type_specifier)
     
 
 def int_to_base_digit(digit):

@@ -42,12 +42,14 @@ class Runtime:
 
     def define_variable(self, name, value, type_specifier="void"):
         if not self.is_variable(name):
+            
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
                 self.check_type(type_specifier, value)
             self.current_scope()[name] = value
         else:
             if type_specifier != "?":
+                print(name, value, type_specifier)
                 value = self.perform_cast(type_specifier, value)
             try:
                 self.scopes[self.get_scope(name)][name].value = value.value
@@ -319,7 +321,7 @@ class Runtime:
                 index = self.evaluate(node.index)
                 value = self.evaluate(node.value)
                 obj.set_item(index, value)
-                self.define_variable(node.name, obj, str(obj.symbol()))
+                self.define_variable(node.name.name, obj, "?") #TODO check type for dicts
                 return Muni_Void()
 
             elif isinstance(node, Range):
