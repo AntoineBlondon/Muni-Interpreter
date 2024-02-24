@@ -1,4 +1,5 @@
 from muni_types import *
+import codecs
 import random
 
 def muni_print(value):
@@ -12,7 +13,7 @@ def muni_type(value):
         return type(value)
 
 def muni_input(prompt):
-    return Muni_String(input(prompt))
+    return Muni_String(input(codecs.decode(str(prompt), 'unicode_escape')))
 
 def muni_read(filename):
     with open(str(filename), 'r') as f:
