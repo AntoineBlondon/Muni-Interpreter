@@ -2,6 +2,13 @@ from math import sqrt
 from muni_error import *
 from muni_context_manager import *
 from copy import deepcopy
+
+
+def to_standard_type(element):
+    if isinstance(element, Muni_Type):
+        return element.to_standard_type()
+    return element
+
 class Muni_Type:
     def __init__(self, value):
         self._value = value
@@ -28,11 +35,11 @@ class Muni_Type:
 
     def to_standard_type(self):
         if isinstance(self, Muni_Dict):
-            return {key.to_standard_type(): value.to_standard_type() for key, value in self.items()}
+            return {to_standard_type(key): to_standard_type(value) for key, value in self.items()}
         elif isinstance(self, Muni_String):
             return str(self)
         elif isinstance(self, Muni_List):
-            return [value.to_standard_type() for value in self]
+            return [to_standard_type(value) for value in self]
         elif isinstance(self, Muni_Int):
             return self.value
         else:
