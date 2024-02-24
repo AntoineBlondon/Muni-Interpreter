@@ -10,6 +10,11 @@ import threading
 from muni_context_manager import ContextManager
 
 
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+
 class Runtime:
     def __init__(self):
         self.context = ContextManager()
@@ -210,7 +215,8 @@ class Runtime:
                 return self.call_function(function, node.arguments)
 
             elif isinstance(node, Return):
-                return self.evaluate(node.value)
+                raise ReturnException(self.evaluate(node.value))
+
             
             elif isinstance(node, FunctionDeclaration):
                 self.define_function(node)
@@ -348,6 +354,7 @@ class Runtime:
             elif isinstance(node, dict):
                 return Muni_Dict(node)
             
+            
             elif node is None:
                 return Muni_Void()
             else:
@@ -428,17 +435,17 @@ class Runtime:
             self.define_variable(param_name, self.evaluate(arg), param_type)
 
         # Execute each statement in the function body
-        result = None
-        for stmt in function.body:
-            if isinstance(stmt, Return):
-                result = self.evaluate(stmt.value)
-                break
-            else:
+        try: 
+            result = None
+            for stmt in function.body:
                 self.evaluate(stmt)
-
-        # Pop the scope
-        self.pop_scope()
-        self.functions[function.name] = stable_function
+        except ReturnException as e:
+            print("returned from function")
+            result = e.value
+        finally:
+            # Pop the scope
+            self.pop_scope()
+            self.functions[function.name] = stable_function
         return self.evaluate(result)
     
     def register_stdlib_functions(self):
@@ -683,10 +690,10 @@ class Runtime:
         else:
             raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
     def evaluate_block(self, statements):
-        try:
-            for statement in statements:
-                self.evaluate(statement)
-        except:
-            self.evaluate(statements) 
+        if not isinstance(statements, list):
+            statements = [statements]
+  
+        for statement in statements:
+            self.evaluate(statement)
     
     
