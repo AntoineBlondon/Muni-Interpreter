@@ -49,7 +49,6 @@ class Runtime:
             self.current_scope()[name] = value
         else:
             if type_specifier != "?":
-                print(name, value, type_specifier)
                 value = self.perform_cast(type_specifier, value)
             try:
                 self.scopes[self.get_scope(name)][name].value = value.value
