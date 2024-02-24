@@ -31,7 +31,10 @@ class Muni_Type:
             return {key.to_standard_type(): value.to_standard_type() for key, value in self.items()}
         elif isinstance(self, Muni_String):
             return str(self)
-        # Add similar conversions for other custom types if necessary
+        elif isinstance(self, Muni_List):
+            return [value.to_standard_type() for value in self]
+        elif isinstance(self, Muni_Int):
+            return self.value
         else:
             return self
 
