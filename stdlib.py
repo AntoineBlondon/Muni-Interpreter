@@ -3,7 +3,7 @@ import codecs
 import random
 
 def muni_print(value):
-    print(value)
+    print(codecs.decode(str(value), 'unicode_escape'))
 
 
 def muni_type(value):
