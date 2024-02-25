@@ -150,7 +150,7 @@ def t_STRING_LITERAL(t):
     return t
 
 def t_IMPORT_LITERAL(t):
-    r'<[a-zA-Z0-9_.:,]+>'
+    r'<[a-zA-Z0-9_.:,/$]+>'
     t.value = t.value[1:-1]  # Remove the < and >
     return t
 
