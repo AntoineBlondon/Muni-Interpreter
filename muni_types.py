@@ -576,6 +576,9 @@ class Muni_String(Muni_Type):
     def __str__(self):
         return self.value
     
+    def __len__(self):
+        return len(self.value)
+    
     def __int__(self):
         return int(self.value)
     

@@ -220,8 +220,12 @@ def p_parameter_list(p):
         p[0] = []
 
 def p_return_statement(p):
-    'return_statement : RETURN expression'
-    p[0] = Return(value=p[2], lineno=p.lineno(1))
+    '''return_statement : RETURN expression
+                        | RETURN'''
+    if len(p) == 2:
+        p[0] = Return(value=None, lineno=p.lineno(1))
+    else:
+        p[0] = Return(value=p[2], lineno=p.lineno(1))
 
 
 def p_expression_function_call(p):

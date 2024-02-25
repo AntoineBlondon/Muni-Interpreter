@@ -29,8 +29,8 @@ def muni_sort(values):
 def muni_join(values, sep):
     return str(sep).join(str(v) for v in values)
 
-def muni_split(value, sep):
-    return Muni_List(str(value).split(str(sep)))
+def muni_split(value, sep=""):
+    return Muni_List(str(value).split(str(sep))) if sep else Muni_List(str(value).split())
 
 def muni_length(value):
     return Muni_Int(len(value))
