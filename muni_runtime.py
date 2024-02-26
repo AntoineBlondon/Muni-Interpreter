@@ -36,7 +36,7 @@ class Runtime:
     def get_argument(self, index):
         if len(self.args) <= index:
             return ""
-        return self.args[index]
+        return Muni_String(self.args[index])
 
     def define_function(self, func):
         self.functions[func.name] = func
