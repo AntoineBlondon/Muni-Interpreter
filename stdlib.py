@@ -1,6 +1,9 @@
 from muni_types import *
 import codecs
 import random
+from muni_parser import parser
+from muni_runtime import Runtime
+from muni_ast_nodes import StatementList
 
 def muni_print(value):
     print(codecs.decode(str(value), 'unicode_escape'))
@@ -38,3 +41,13 @@ def muni_length(value):
 def muni_shuffle(values):
     random.shuffle(list(values))
     return values
+
+def muni_run_program(program, args=[]):
+    ast = parser.parse(program)
+    runtime = Runtime()
+    runtime.set_args(args)
+    if isinstance(ast, StatementList):
+        for stmt in ast.statements:
+            runtime.evaluate(stmt)
+    else:
+        runtime.evaluate(ast)
