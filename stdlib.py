@@ -43,6 +43,8 @@ def muni_shuffle(values):
     return values
 
 def muni_run_program(program, args=[]):
+    program = str(program)
+    args = [str(arg) for arg in list(args)]
     ast = parser.parse(program)
     runtime = Runtime()
     runtime.set_args(args)
