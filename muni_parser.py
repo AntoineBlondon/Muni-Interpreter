@@ -328,6 +328,10 @@ def p_expression_negative(p):
     'expression : MINUS expression'
     p[0] = UnaryOperation(operand=p[2], lineno=p.lineno(1))
 
+def p_expression_argument(p):
+    'expression : DOLLAR NUMBER'
+    p[0] = ArgumentGet(index=p[2], lineno=p.lineno(1))
+
 
 def p_range_operator(p):
     '''range_operator : RANGE_OP

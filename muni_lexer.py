@@ -52,7 +52,7 @@ tokens = [
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'PIPE',
     'EXCLAMATION', 'AMPERSAND', 'HAT',
-    'NUMBER', 'IMAGINARY_NUMBER', 'BASED_NUMBER', 'STRING_LITERAL', 'IMPORT_LITERAL',
+    'NUMBER', 'IMAGINARY_NUMBER', 'BASED_NUMBER', 'STRING_LITERAL', 'IMPORT_LITERAL', 'DOLLAR'
 ] + list(keywords.values())
 
 
@@ -100,12 +100,14 @@ t_NE = r'!='
 t_EXCLAMATION = r'!'
 t_AMPERSAND = r'&'
 t_HAT = r'\^'
+t_DOLLAR = r'\$'
 
 t_UNTYPED = r'\?'
 #t_AT = r'@'
 
 t_RANGE_OP = r'\.\.'
 t_RANGE_OP_INCLUSIVE = r'\.\.\.'
+
 
 
 # Boolean values
@@ -130,6 +132,8 @@ def t_IMAGINARY_NUMBER(t):
         num_part = '-1'
     t.value = Muni_Complex(0, float(num_part))
     return t
+
+
 # Literals
 def t_NUMBER(t):
     r'-?\d+(\.\d+)?([eE][-+]?\d+)?'
@@ -160,8 +164,6 @@ def t_IDENTIFIER(t):
     t.type = keywords.get(t.value, 'IDENTIFIER')
     return t
 
-
-
 # Comments
 def t_comment_singleline(t):
     r'\#.*'
@@ -178,6 +180,8 @@ def t_comment_multiline(t):
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+
+
 
 # Errors
 def t_error(t):

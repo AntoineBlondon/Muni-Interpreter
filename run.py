@@ -8,8 +8,9 @@ import sys
 from muni_lexer import lexer
 
 
-def run_program(ast):
+def run_program(ast, args=[]):
     runtime = Runtime()
+    runtime.set_args(args)
     if isinstance(ast, StatementList):
         for stmt in ast.statements:
             runtime.evaluate(stmt)
@@ -34,7 +35,7 @@ def main():
     argparser.add_argument('-l', '--lexer', action='store_true', help='print the lexer output')
     argparser.add_argument('-p', '--parser', action='store_true', help='print the parser output')
 
-    args = argparser.parse_args()
+    args, remaining_args = argparser.parse_known_args()
 
     with open(args.file, 'r') as file:
         content = file.read()
@@ -48,9 +49,13 @@ def main():
         ast = parser.parse(content)
         print(ast)
 
+    input_strings = sys.argv[2:]
+
+    
+
     if not args.lexer and not args.parser:
         ast = parser.parse(content)
-        run_program(ast)  
+        run_program(ast, args=input_strings)  
 
 if __name__ == "__main__":
     main()

@@ -394,3 +394,12 @@ class ThrowStatement(AstNode):
     
     def __str__(self):
         return f"ThrowStatement(expression={self.expression})"
+    
+
+class ArgumentGet(AstNode):
+    def __init__(self, index, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
+        self.index = index
+    
+    def __str__(self):
+        return f"ArgumentGet(index={self.index})"

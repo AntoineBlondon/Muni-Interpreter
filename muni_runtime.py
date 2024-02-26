@@ -27,6 +27,17 @@ class Runtime:
         self.lineno = 0
         self.register_stdlib_functions()
 
+    def set_args(self, args):
+        self.args = args
+
+    def get_args(self):
+        return self.args
+    
+    def get_argument(self, index):
+        if len(self.args) <= index:
+            return ""
+        return self.args[index]
+
     def define_function(self, func):
         self.functions[func.name] = func
 
@@ -337,6 +348,9 @@ class Runtime:
 
             elif isinstance(node, ThrowStatement):
                 raise Muni_Error(self.evaluate(node.expression))
+        
+            elif isinstance(node, ArgumentGet):
+                return self.get_argument(int(node.index))
             
             elif self.is_variable(node):
                 return self.get_variable(node)
