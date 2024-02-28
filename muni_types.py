@@ -635,6 +635,10 @@ class Muni_List(Muni_Type):
     def __add__(self, other):
         if isinstance(other, Muni_List):
             return Muni_List(self.value + other.value, self.type_specifier)
+        elif isinstance(other, Muni_Dict):
+            new_list = deepcopy(self)
+            new_list.append(other)
+            return new_list
     
         try:
             return Muni_List(self.value + [other.copy()], self.type_specifier)
@@ -679,6 +683,8 @@ class Muni_List(Muni_Type):
     
     
     def check_type(self, item):
+        if self.type_specifier == "UNTYPED":
+            return
         if not isinstance(item, types[self.type_specifier]):
             raise Muni_Error(f"Expected type {types[self.type_specifier]}, got {type(item)}")
     def cast_items(self):
