@@ -21,6 +21,7 @@ class Runtime:
         self.context.set_runtime(self)
         self.scopes = [{}]
         self.functions = {}
+        self.imported_functions = []
         self.signals = {}
         self.watched = {}
         self.is_running = True
@@ -227,7 +228,10 @@ class Runtime:
                 if function is None:
                     raise Muni_Error(f"Function Error: {node.name} not a function.")
                 if callable(function):
-                    arguments = [self.evaluate(arg) for arg in node.arguments]
+                    if (node.name in self.imported_functions):
+                        arguments = [to_standard_type(self.evaluate(arg)) for arg in node.arguments]
+                    else:
+                        arguments = [self.evaluate(arg) for arg in node.arguments]
                     if self.is_running == False: return
                     return function(*arguments)
                 return self.call_function(function, node.arguments)
@@ -494,7 +498,7 @@ class Runtime:
             if not os.path.exists(module_path):
                 raise Muni_Error(f"File {module_path} not found")
 
-            
+
             imported_ast = muni_parser.parse_file(module_path)
             for statement in imported_ast.statements:
                 self.evaluate(statement)
@@ -528,8 +532,10 @@ class Runtime:
         for func_name in imported_functions:
             if alias:
                 self.functions[f"{alias}_{func_name}"] = imported_functions[func_name]
+                self.imported_functions.append(f"{alias}_{func_name}")
             else:
                 self.functions[func_name] = imported_functions[func_name]
+                self.imported_functions.append(func_name)
              
     def perform_cast(self, to_type, value):
         
