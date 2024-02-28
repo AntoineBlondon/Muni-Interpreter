@@ -92,6 +92,13 @@ class Runtime:
             return False
         except:
             return False
+        
+    def remove_variable(self, name):
+        for scope in reversed(self.scopes):
+            if name in scope:
+                del scope[name]
+                return
+
     def define_signal(self, signal_name):
         if signal_name in self.signals:
             raise Muni_Error(f"Signal Error: {signal_name} already a signal.")
@@ -272,8 +279,10 @@ class Runtime:
                 return Muni_Void()
             
             elif isinstance(node, ForInStatement):
-                for value in self.evaluate(node.iterable):
+                iterable = self.evaluate(node.iterable)
+                for value in iterable:
                     self.check_type(node.type_specifier, value)
+                    self.remove_variable(node.identifier)
                     self.define_variable(node.identifier, value, node.type_specifier)
                     self.evaluate_block(node.body)
                 return Muni_Void()
