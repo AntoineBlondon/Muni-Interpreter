@@ -52,4 +52,4 @@ def muni_run_program(program, args=[]):
         for stmt in ast.statements:
             runtime.evaluate(stmt)
     else:
-        runtime.evaluate(ast)
+        runtime.evaluate(ast)   

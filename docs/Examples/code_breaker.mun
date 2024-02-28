@@ -1,0 +1,90 @@
+/*
+    Simple Code breaker program
+
+    Let's the user play code breaker/hangman with a random word from a list
+
+    Author: AntoineBlondon
+*/
+import <random:py> as rd;
+
+/*
+    Returns a random word from the given wordlist
+
+    -> string
+*/
+string get_random_word() {
+    list wordlist = ["apple", "banana", "cherry", "date", "fig", "grape", "lemon", "mango", "nut", "orange", "pear", "quince", "raspberry", "strawberry", "tomato", "ugli", "vanilla", "watermelon", "ximenia", "yam", "zucchini"];
+    rd_shuffle(wordlist); # We use the random module to shuffle the list
+    return wordlist[0]; # We retrieve the first element of the list
+}
+
+/*
+    Returns whether the element is in the iterator
+
+    -> boolean
+*/
+boolean is_in(string element, list<string> iterator) {
+    for (string a in iterator) {
+        if (element == a) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/*
+    Returns the word with only the guessed letters
+    
+    Ex: word_display("hello", ["h", l]) -> h_ll_
+
+    -> string
+*/
+string word_display(string word, list<string> tested_letters) {
+    string final_display = "";
+    for(string character in word) {
+        if(is_in(character, tested_letters)) {
+            final_display += character;
+        } else {
+            final_display += "_";
+        }
+    }
+    return final_display;
+}
+
+
+
+
+/*
+    Main game loop
+
+    -> void
+*/
+void main() {
+
+    # We set the initial variables
+    string word = get_random_word(); # We retrieve the word to guess
+    string guess = ""; # We set the guess to an empty string
+    list<string> letters = []; # We set the used letters to an empty list
+
+    # Main loop
+    until (guess == word) {
+        # We display the current state of the game
+        print("Used letters: " + (join(letters, " ") -> string));
+        print(word_display(word, letters));
+        
+        # We ask for a letter or a guess
+        string guess = input("Choose a letter or guess > ");
+        
+        # If the used typed a letter (length of input is 1): we add the letter to the list of used letters
+        if (length(guess) == 1) {
+            letters += guess;
+        }
+    }
+
+    # The game is finished, the user won
+    print("you won!");
+}
+
+# We start the program
+main();
