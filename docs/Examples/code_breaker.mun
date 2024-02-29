@@ -14,8 +14,8 @@ import <random:py> as rd;
 */
 string get_random_word() {
     list wordlist = ["apple", "banana", "cherry", "date", "fig", "grape", "lemon", "mango", "nut", "orange", "pear", "quince", "raspberry", "strawberry", "tomato", "ugli", "vanilla", "watermelon", "ximenia", "yam", "zucchini"];
-    rd_shuffle(wordlist); # We use the random module to shuffle the list
-    return wordlist[0]; # We retrieve the first element of the list
+    int random_index = rd_randint(0, length(wordlist) - 1); # We use the random module to get a random index
+    return wordlist[random_index]; # We retrieve a random element of the list
 }
 
 /*
