@@ -36,7 +36,7 @@ boolean is_in(string element, list<string> iterator) {
 /*
     Returns the word with only the guessed letters
     
-    Ex: word_display("hello", ["h", l]) -> h_ll_
+    Ex: word_display("hello", ["h", "l"]) -> h_ll_
 
     -> string
 */
