@@ -59,7 +59,6 @@ class Runtime:
 
     def define_variable(self, name, value, type_specifier="void", mutable=False):
 
-
         if isinstance(value, Muni_Type) and not value.mutable:
             value = value.copy()
         if isinstance(value, Muni_Type):
@@ -470,7 +469,9 @@ class Runtime:
 
         # Assign arguments to parameters in the new scope
         for (param_type, param_name), arg in zip(function.parameters, arguments):
-            self.define_variable(param_name, self.evaluate(arg), param_type)
+            arg = self.evaluate(arg)
+            mutable = isinstance(arg, Muni_Type) and arg.mutable
+            self.define_variable(param_name, self.evaluate(arg), param_type, mutable=mutable)
 
         # Execute each statement in the function body
         try: 
