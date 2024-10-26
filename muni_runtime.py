@@ -125,16 +125,17 @@ class Runtime:
     def assign_watching(self, var_name, body):
         if not self.is_variable(var_name):
             raise Muni_Error(f"Variable Error: {var_name} not a variable.")
+        var_id = self.get_variable(var_name).id
         
         if not self.is_watched(var_name):
-            self.watched[var_name] = []
+            self.watched[var_id] = []
 
-        self.watched[var_name].append({"scope": self.get_scope(var_name), "body": body})
+        self.watched[var_id].append({"scope": self.get_scope(var_name), "body": body})
 
     def is_watched(self, var_name):
         if not self.is_variable(var_name):
             raise Muni_Error(f"Variable Error: {var_name} not a variable.")
-        return var_name in self.watched
+        return self.get_variable(var_name).id in self.watched
     
     def execute_watch(self, var_name):
         if not self.is_variable(var_name):
@@ -142,8 +143,10 @@ class Runtime:
         
         if not self.is_watched(var_name):
             return
+
+        var_id = self.get_variable(var_name).id
         
-        for d_statements in self.watched[var_name]:
+        for d_statements in self.watched[var_id]:
             if d_statements["scope"] != self.get_scope(var_name):
                 continue
             statements = d_statements["body"]
