@@ -13,6 +13,7 @@ keywords = {
     'void': 'VOID',       # For declaring void variables
     'list': 'LIST',     # For list data type
     'dict': 'DICT',     # For dictionary data type
+    'mut': 'MUT',       # For mutable variables
     'for': 'FOR',       # For 'for' loops
     'while': 'WHILE',   # For 'while' loops
     'until': 'UNTIL',   # For 'until' loops

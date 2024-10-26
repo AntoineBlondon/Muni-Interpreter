@@ -57,7 +57,11 @@ class Runtime:
     def current_scope(self):
         return self.scopes[-1]
 
-    def define_variable(self, name, value, type_specifier="void"):
+    def define_variable(self, name, value, type_specifier="void", mutable=False):
+
+        if not value.mutable:
+            value = value.copy()
+        value.set_mutable(mutable)
         if not self.is_variable(name):
             
             if type_specifier != "?":
@@ -172,17 +176,18 @@ class Runtime:
             
             elif isinstance(node, Declaration):
                 value = self.evaluate(node.value)
-                self.define_variable(node.name, value, node.type_specifier)
+                self.define_variable(node.name, value, node.type_specifier, mutable=node.mutable)
 
             elif isinstance(node, Assignment):
                 value = self.evaluate(node.value)
                 var_type = type(self.get_variable(node.name))
+                var = self.get_variable(node.name)
                 if var_type != "UNTYPED":
                     self.check_type(var_type, value)
                 try:
-                    self.define_variable(node.name, value, str(value.symbol()))
+                    self.define_variable(node.name, value, str(value.symbol()), mutable=var.mutable)
                 except Exception as e:
-                    self.define_variable(node.name, value, str(type(value).symbol()))
+                    self.define_variable(node.name, value, str(type(value).symbol()), mutable=var.mutable)
                 
                 if(self.is_watched(node.name)):
                     self.execute_watch(node.name)
@@ -195,7 +200,7 @@ class Runtime:
                 except Exception as e:
                     symbol = variable.symbol()
 
-                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
+                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol), mutable=variable.mutable)
 
                 
 

@@ -190,13 +190,18 @@ def p_default_clause(p):
 
 def p_declaration(p):
     '''declaration : type_specifier IDENTIFIER EQUALS expression
-                   | type_specifier IDENTIFIER'''
-    if len(p) == 5:
-        # Declaration with assignment
-        p[0] = Declaration(type_specifier=p[1], name=p[2], value=p[4], lineno=p.lineno(1))
-    else:
-        # Declaration without assignment
-        p[0] = Declaration(type_specifier=p[1], name=p[2], value=None, lineno=p.lineno(1))
+                   | type_specifier IDENTIFIER
+                   | MUT type_specifier IDENTIFIER
+                   | MUT type_specifier IDENTIFIER EQUALS expression'''
+    match list(p):
+        case [_, _, specifier, name, _, expr]:
+            p[0] = Declaration(type_specifier=specifier, name=name, value=expr, mutable=True, lineno=p.lineno(1))
+        case [_, specifier, name, _, expr]:
+            p[0] = Declaration(type_specifier=specifier, name=name, value=expr, lineno=p.lineno(1))
+        case [_, _, specifier, name]:
+            p[0] = Declaration(type_specifier=specifier, name=name, value=None, mutable=True, lineno=p.lineno(1))
+        case [_, specifier, name]:
+            p[0] = Declaration(type_specifier=specifier, name=name, value=None, lineno=p.lineno(1))
 
 
 def p_assignment(p):

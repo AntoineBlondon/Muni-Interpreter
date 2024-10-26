@@ -140,14 +140,15 @@ class ExpressionAssignment(AstNode):
         return f"ExpressionAssignment(name='{self.name}', operator='{self.operator}', value={self.value})"
 
 class Declaration(AstNode):
-    def __init__(self, type_specifier, name, value=None, lineno=None, col_offset=None):
+    def __init__(self, type_specifier, name, value=None, mutable=False, lineno=None, col_offset=None):
         super().__init__(lineno, col_offset)
         self.type_specifier = type_specifier
         self.name = name
         self.value = value
+        self.mutable = mutable
 
     def __str__(self):
-        return f"Declaration(type='{self.type_specifier}', name='{self.name}', value={self.value})"
+        return f"Declaration(type='{self.type_specifier}', name='{self.name}', value={self.value}, mutable={self.mutable})"
 
 
 class ListInitialization(AstNode):

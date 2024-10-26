@@ -13,6 +13,10 @@ class Muni_Type:
     def __init__(self, value):
         self._value = value
         self.id = id(self)
+        self.mutable = True
+    
+    def set_mutable(self, value):
+        self.mutable = value
         
     @property
     def value(self):
