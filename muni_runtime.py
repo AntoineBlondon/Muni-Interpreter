@@ -59,9 +59,11 @@ class Runtime:
 
     def define_variable(self, name, value, type_specifier="void", mutable=False):
 
-        if not value.mutable:
+
+        if isinstance(value, Muni_Type) and not value.mutable:
             value = value.copy()
-        value.set_mutable(mutable)
+        if isinstance(value, Muni_Type):
+            value.set_mutable(mutable)
         if not self.is_variable(name):
             
             if type_specifier != "?":
@@ -182,12 +184,13 @@ class Runtime:
                 value = self.evaluate(node.value)
                 var_type = type(self.get_variable(node.name))
                 var = self.get_variable(node.name)
+                mutable = (isinstance(var, Muni_Type) and var.mutable)
                 if var_type != "UNTYPED":
                     self.check_type(var_type, value)
                 try:
-                    self.define_variable(node.name, value, str(value.symbol()), mutable=var.mutable)
+                    self.define_variable(node.name, value, str(value.symbol()), mutable=mutable)
                 except Exception as e:
-                    self.define_variable(node.name, value, str(type(value).symbol()), mutable=var.mutable)
+                    self.define_variable(node.name, value, str(type(value).symbol()), mutable=mutable)
                 
                 if(self.is_watched(node.name)):
                     self.execute_watch(node.name)
@@ -199,8 +202,8 @@ class Runtime:
                     symbol = type(variable).symbol()
                 except Exception as e:
                     symbol = variable.symbol()
-
-                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol), mutable=variable.mutable)
+                mutable = (isinstance(variable, Muni_Type) and variable.mutable)
+                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol), mutable=mutable)
 
                 
 
