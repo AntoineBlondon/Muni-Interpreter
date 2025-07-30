@@ -2,8 +2,8 @@ import <textual.lib> as t;
 
 
 module c {
-    int add(int n, int m) {
-        return n + m;
+    int add(int a, int b) {
+        return a + b;
     }
 }
 

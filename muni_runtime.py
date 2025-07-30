@@ -70,12 +70,12 @@ class Runtime:
     def current_scope(self):
         return self.scopes[-1]
 
-    def define_variable(self, name, value, type_specifier="void"):
+    def define_variable(self, name, value, type_specifier="void", force_new_scope=False):
 
         if isinstance(value, Muni_Type):
             value = value.copy()
         
-        if not self.is_variable(name):
+        if force_new_scope or not self.is_variable(name):
             
             if type_specifier != "?":
                 value = self.perform_cast(type_specifier, value)
@@ -494,7 +494,7 @@ class Runtime:
         # Assign arguments to parameters in the new scope
         for (param_type, param_name), arg in zip(function.parameters, arguments):
             arg = self.evaluate(arg)
-            self.define_variable(param_name, self.evaluate(arg), param_type)
+            self.define_variable(param_name, self.evaluate(arg), param_type, force_new_scope=True)
 
         # Execute each statement in the function body
         try: 
