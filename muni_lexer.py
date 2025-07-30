@@ -5,7 +5,6 @@ from muni_types import *
 # Dictionary of keywords
 keywords = {
     'int': 'INT',       # For declaring integer variables
-    'based': 'BASED',   # For declaring based number variables
     'complex': 'COMPLEX', # For declaring complex number variables
     'float': 'FLOAT',   # For declaring float variables
     'string': 'STRING', # For declaring string variables
@@ -13,7 +12,6 @@ keywords = {
     'void': 'VOID',       # For declaring void variables
     'list': 'LIST',     # For list data type
     'dict': 'DICT',     # For dictionary data type
-    'mut': 'MUT',       # For mutable variables
     'for': 'FOR',       # For 'for' loops
     'while': 'WHILE',   # For 'while' loops
     'until': 'UNTIL',   # For 'until' loops
@@ -34,6 +32,7 @@ keywords = {
     'watch': 'WATCH',
     'when': 'WHEN',
     'throw': 'THROW',
+    'module': 'MODULE'
 
 }
 
@@ -46,14 +45,14 @@ tokens = [
     #'LARROW', 
     'RARROW',
     'UNTYPED', 'LBRACKET', 'RBRACKET',
-    'RANGE_OP', 'RANGE_OP_INCLUSIVE',
+    'RANGE_OP', 'RANGE_OP_INCLUSIVE', 'DOT',
     #'AT',
     
 
     'SEMI', 'COMMA', 'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE',
     'PIPE',
     'EXCLAMATION', 'AMPERSAND', 'HAT',
-    'NUMBER', 'IMAGINARY_NUMBER', 'BASED_NUMBER', 'STRING_LITERAL', 'IMPORT_LITERAL', 'DOLLAR'
+    'NUMBER', 'IMAGINARY_NUMBER', 'STRING_LITERAL', 'IMPORT_LITERAL', 'DOLLAR'
 ] + list(keywords.values())
 
 
@@ -109,6 +108,8 @@ t_UNTYPED = r'\?'
 t_RANGE_OP = r'\.\.'
 t_RANGE_OP_INCLUSIVE = r'\.\.\.'
 
+t_DOT = '.'
+
 
 
 # Boolean values
@@ -117,11 +118,6 @@ def t_BOOLEAN(t):
     t.value = Muni_Boolean(t.value == 'true')
     return t
 
-def t_BASED_NUMBER(t):
-    r'-?\d+@[\da-zA-Z]+'
-    base, value = t.value.split('@')
-    t.value = Muni_BasedNumber(value, int(base))
-    return t
 
 def t_IMAGINARY_NUMBER(t):
     r'(?<=\d|\s)[+-]?\d*(\.\d+)?[jJ](?=\W|$)'

@@ -1,0 +1,10 @@
+module a {
+    void hello() {
+        print("hi");
+    }
+    boolean b = false;
+}
+
+a.hello();
+
+print(a.b);

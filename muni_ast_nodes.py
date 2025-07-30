@@ -82,7 +82,7 @@ class UnaryOperation(AstNode):
 class Number(AstNode):
     def __init__(self, value, lineno=None, col_offset=None):
         super().__init__(lineno, col_offset)
-        if not isinstance(value, (Muni_Int, Muni_Float, Muni_Complex, Muni_BasedNumber)):
+        if not isinstance(value, (Muni_Int, Muni_Float, Muni_Complex)):
             raise TypeError("Number node requires a Muni number type")
         self.value = value
 
@@ -140,15 +140,14 @@ class ExpressionAssignment(AstNode):
         return f"ExpressionAssignment(name='{self.name}', operator='{self.operator}', value={self.value})"
 
 class Declaration(AstNode):
-    def __init__(self, type_specifier, name, value=None, mutable=False, lineno=None, col_offset=None):
+    def __init__(self, type_specifier, name, value=None, lineno=None, col_offset=None):
         super().__init__(lineno, col_offset)
         self.type_specifier = type_specifier
         self.name = name
         self.value = value
-        self.mutable = mutable
 
     def __str__(self):
-        return f"Declaration(type='{self.type_specifier}', name='{self.name}', value={self.value}, mutable={self.mutable})"
+        return f"Declaration(type='{self.type_specifier}', name='{self.name}', value={self.value})"
 
 
 class ListInitialization(AstNode):
@@ -219,6 +218,17 @@ class FunctionDeclaration(AstNode):
     def __str__(self):
         params = ", ".join([f"{ptype} {pname}" for ptype, pname in self.parameters])
         return f"FunctionDeclaration(name={self.name}, return_type={self.return_type}, params=[{params}], body=[{', '.join([str(x) for x in self.body])}])"
+
+class ModuleDeclaration(AstNode):
+    def __init__(self, name, body, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
+        self.name = name
+        self.body = body
+
+    def __str__(self):
+        return f"ModuleDeclaration(name={self.name}, body=[{', '.join([str(x) for x in self.body])}])"
+
+
 
 
 class Return(AstNode):
@@ -404,3 +414,14 @@ class ArgumentGet(AstNode):
     
     def __str__(self):
         return f"ArgumentGet(index={self.index})"
+    
+
+
+class DotAccess(AstNode):
+    def __init__(self, container, attribute, lineno=None, col_offset=None):
+        super().__init__(lineno, col_offset)
+        self.container = container
+        self.attribute = attribute
+    
+    def __str__(self):
+        return f"{self.container}.({self.attribute})"

@@ -21,10 +21,12 @@ class Runtime:
         self.context.set_runtime(self)
         self.scopes = [{}]
         self.functions = {}
+        self.modules = {}
         self.imported_functions = []
         self.signals = {}
         self.watched = {}
         self.is_running = True
+        self.module = None
         self.lineno = 0
         self.register_stdlib_functions()
 
@@ -40,7 +42,18 @@ class Runtime:
         return Muni_String(self.args[index])
 
     def define_function(self, func):
+        if self.module is not None:
+            self.functions[f"{self.module}.{func.name}"] = func
         self.functions[func.name] = func
+    
+    def define_module(self, module_node):
+        self.push_scope()
+        self.module = module_node.name
+        for statement in module_node.body:
+            self.evaluate(statement)
+        self.modules[module_node.name] = deepcopy(self.current_scope())
+        self.module = None
+        self.pop_scope()
 
     def push_scope(self):
         self.scopes.append({})
@@ -57,12 +70,11 @@ class Runtime:
     def current_scope(self):
         return self.scopes[-1]
 
-    def define_variable(self, name, value, type_specifier="void", mutable=False):
+    def define_variable(self, name, value, type_specifier="void"):
 
-        if isinstance(value, Muni_Type) and not value.mutable:
-            value = value.copy()
         if isinstance(value, Muni_Type):
-            value.set_mutable(mutable)
+            value = value.copy()
+        
         if not self.is_variable(name):
             
             if type_specifier != "?":
@@ -127,11 +139,11 @@ class Runtime:
             thread = threading.Thread(target=self.evaluate_block, args=(statements,))
             thread.start()
 
+
     def assign_watching(self, var_name, body):
         if not self.is_variable(var_name):
             raise Muni_Error(f"Variable Error: {var_name} not a variable.")
         var_id = self.get_variable(var_name).id
-        
         if not self.is_watched(var_name):
             self.watched[var_id] = []
 
@@ -174,22 +186,23 @@ class Runtime:
             
             elif isinstance(node, Variable):
                 return self.get_variable(node.name)
+
+            elif isinstance(node, DotAccess):
+                return self.evaluate(self.modules[node.container.name][node.attribute])
             
             elif isinstance(node, Declaration):
                 value = self.evaluate(node.value)
-                self.define_variable(node.name, value, node.type_specifier, mutable=node.mutable)
+                self.define_variable(node.name, value, node.type_specifier)
 
             elif isinstance(node, Assignment):
                 value = self.evaluate(node.value)
                 var_type = type(self.get_variable(node.name))
-                var = self.get_variable(node.name)
-                mutable = (isinstance(var, Muni_Type) and var.mutable)
                 if var_type != "UNTYPED":
                     self.check_type(var_type, value)
                 try:
-                    self.define_variable(node.name, value, str(value.symbol()), mutable=mutable)
+                    self.define_variable(node.name, value, str(value.symbol()))
                 except Exception as e:
-                    self.define_variable(node.name, value, str(type(value).symbol()), mutable=mutable)
+                    self.define_variable(node.name, value, str(type(value).symbol()))
                 
                 if(self.is_watched(node.name)):
                     self.execute_watch(node.name)
@@ -201,8 +214,9 @@ class Runtime:
                     symbol = type(variable).symbol()
                 except Exception as e:
                     symbol = variable.symbol()
-                mutable = (isinstance(variable, Muni_Type) and variable.mutable)
-                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol), mutable=mutable)
+                self.define_variable(node.name, self.apply_binary_operator(variable, value, node.operator[:-1]), str(symbol))
+                if(self.is_watched(node.name)):
+                    self.execute_watch(node.name)
 
                 
 
@@ -234,7 +248,11 @@ class Runtime:
                 return -value
 
             elif isinstance(node, FunctionCall):
-                function = self.get_function(node.name)
+                if isinstance(node.name, DotAccess):
+                    function = self.get_function(f"{node.name.container.name}.{node.name.attribute}")
+                else:
+                    function = self.get_function(node.name.name)
+
                 if function is None:
                     raise Muni_Error(f"Function Error: {node.name} not a function.")
                 if callable(function):
@@ -252,6 +270,9 @@ class Runtime:
             
             elif isinstance(node, FunctionDeclaration):
                 self.define_function(node)
+                return Muni_Void()
+            elif isinstance(node, ModuleDeclaration):
+                self.define_module(node)
                 return Muni_Void()
 
             elif isinstance(node, ImportStatement):
@@ -361,6 +382,8 @@ class Runtime:
                 value = self.evaluate(node.value)
                 obj.set_item(index, value)
                 self.define_variable(node.name.name, obj, "?") #TODO check type for dicts
+                if(self.is_watched(node.name)):
+                    self.execute_watch(node.name)
                 return Muni_Void()
 
             elif isinstance(node, Range):
@@ -470,8 +493,7 @@ class Runtime:
         # Assign arguments to parameters in the new scope
         for (param_type, param_name), arg in zip(function.parameters, arguments):
             arg = self.evaluate(arg)
-            mutable = isinstance(arg, Muni_Type) and arg.mutable
-            self.define_variable(param_name, self.evaluate(arg), param_type, mutable=mutable)
+            self.define_variable(param_name, self.evaluate(arg), param_type)
 
         # Execute each statement in the function body
         try: 
@@ -533,8 +555,9 @@ class Runtime:
 
         # Load the module
         spec = importlib.util.spec_from_file_location(module_name, path_to_file)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        if spec is not None and spec.loader is not None:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
 
         return module
         
@@ -557,8 +580,6 @@ class Runtime:
                 return value
             elif isinstance(value, Muni_Float):
                 return Muni_Int(int(value.value))
-            elif isinstance(value, Muni_BasedNumber):
-                return Muni_Int(int(value.value))
             elif isinstance(value, Muni_Boolean):
                 return Muni_Int(int(value.value))
             elif isinstance(value, type(None)):
@@ -575,8 +596,6 @@ class Runtime:
             if isinstance(value, Muni_Int):
                 return Muni_Float(value.value)
             elif isinstance(value, Muni_Float):
-                return Muni_Float(value.value)
-            elif isinstance(value, Muni_BasedNumber):
                 return Muni_Float(value.value)
             elif isinstance(value, Muni_Boolean):
                 return Muni_Float(value.value)
@@ -595,8 +614,6 @@ class Runtime:
                 return Muni_Complex(value.value, 0)
             elif isinstance(value, Muni_Float):
                 return Muni_Complex(value.value, 0)
-            elif isinstance(value, Muni_BasedNumber):
-                return Muni_Complex(value.value, 0)
             elif isinstance(value, Muni_Complex):
                 return value
             elif isinstance(value, Muni_Boolean):
@@ -609,32 +626,11 @@ class Runtime:
                 return Muni_Complex(value.real, value.imag)
             except:
                 raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
-        
-        elif to_type == 'based':
-            if isinstance(value, Muni_Int):
-                return Muni_BasedNumber(value.value, 10)
-            elif isinstance(value, Muni_Float):
-                return Muni_BasedNumber(value.value, 10)
-            elif isinstance(value, Muni_BasedNumber):
-                return value
-            elif isinstance(value, Muni_Boolean):
-                return Muni_BasedNumber(value.value, 10)
-            elif isinstance(value, type(None)):
-                return Muni_BasedNumber(0, 10)
-            elif isinstance(value, Muni_Void):
-                return Muni_BasedNumber(0, 10)
-            try:
-                return Muni_BasedNumber(value)
-            except:
-                raise Muni_Error(f"Cannot cast {type(value)} to {to_type}")
-        
 
         elif to_type == 'boolean':
             if isinstance(value, Muni_Int):
                 return Muni_Boolean(value.value != 0)
             elif isinstance(value, Muni_Float):
-                return Muni_Boolean(value.value != 0)
-            elif isinstance(value, Muni_BasedNumber):
                 return Muni_Boolean(value.value != 0)
             elif isinstance(value, Muni_Boolean):
                 return value
@@ -651,8 +647,6 @@ class Runtime:
             if isinstance(value, Muni_Int):
                 return Muni_String(str(value.value))
             elif isinstance(value, Muni_Float):
-                return Muni_String(str(value.value))
-            elif isinstance(value, Muni_BasedNumber):
                 return Muni_String(str(value.value))
             elif isinstance(value, Muni_Boolean):
                 return Muni_String(str(value.value))
@@ -710,8 +704,6 @@ class Runtime:
             if isinstance(value, Muni_Int):
                 return value.value
             elif isinstance(value, Muni_Float):
-                return int(value.value)
-            elif isinstance(value, Muni_BasedNumber):
                 return int(value.value)
             elif isinstance(value, Muni_Boolean):
                 return int(value.value)

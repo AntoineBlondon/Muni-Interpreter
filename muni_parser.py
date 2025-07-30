@@ -31,6 +31,7 @@ def p_statement(p):
                  | declaration SEMI
                  | assignment SEMI
                  | function_declaration
+                 | module_declaration
                  | return_statement SEMI
                  | import_statement SEMI
                  | emit_statement SEMI
@@ -45,7 +46,6 @@ def p_type_specifier(p):
     '''type_specifier : BOOLEAN
                       | INT
                       | FLOAT
-                      | BASED
                       | COMPLEX
                       | STRING
                       | VOID
@@ -190,16 +190,14 @@ def p_default_clause(p):
 
 def p_declaration(p):
     '''declaration : type_specifier IDENTIFIER EQUALS expression
-                   | type_specifier IDENTIFIER
-                   | MUT type_specifier IDENTIFIER
-                   | MUT type_specifier IDENTIFIER EQUALS expression'''
+                   | type_specifier IDENTIFIER'''
     match list(p):
         case [_, _, specifier, name, _, expr]:
-            p[0] = Declaration(type_specifier=specifier, name=name, value=expr, mutable=True, lineno=p.lineno(1))
+            p[0] = Declaration(type_specifier=specifier, name=name, value=expr, lineno=p.lineno(1))
         case [_, specifier, name, _, expr]:
             p[0] = Declaration(type_specifier=specifier, name=name, value=expr, lineno=p.lineno(1))
         case [_, _, specifier, name]:
-            p[0] = Declaration(type_specifier=specifier, name=name, value=None, mutable=True, lineno=p.lineno(1))
+            p[0] = Declaration(type_specifier=specifier, name=name, value=None, lineno=p.lineno(1))
         case [_, specifier, name]:
             p[0] = Declaration(type_specifier=specifier, name=name, value=None, lineno=p.lineno(1))
 
@@ -212,6 +210,11 @@ def p_assignment(p):
 def p_function_declaration(p):
     '''function_declaration : type_specifier IDENTIFIER LPAREN parameter_list RPAREN LBRACE statements RBRACE'''
     p[0] = FunctionDeclaration(name=p[2], return_type=p[1], parameters=p[4], body=p[7], lineno=p.lineno(1))
+
+def p_module_declaration(p):
+    '''module_declaration : MODULE IDENTIFIER LBRACE statements RBRACE'''
+    p[0] = ModuleDeclaration(name=p[2], body=p[4], lineno=p.lineno(1))
+
 
 def p_parameter_list(p):
     '''parameter_list : parameter_list COMMA type_specifier IDENTIFIER
@@ -234,7 +237,7 @@ def p_return_statement(p):
 
 
 def p_expression_function_call(p):
-    'expression : IDENTIFIER LPAREN argument_list RPAREN'
+    'expression : expression LPAREN argument_list RPAREN'
     p[0] = FunctionCall(name=p[1], arguments=p[3], lineno=p.lineno(1))
 
 def p_signal_declaration(p):
@@ -273,6 +276,10 @@ def p_import_statement(p):
     else:
         p[0] = ImportStatement(module_path=p[2], lineno=p.lineno(1))
 
+
+def p_expression_dot(p):
+    '''expression : expression DOT IDENTIFIER'''
+    p[0] = DotAccess(container=p[1], attribute=p[3], lineno=p.lineno(1))
 
 
 def p_expression_binop(p):
@@ -313,8 +320,7 @@ def p_expression_not(p):
 
 def p_expression_number(p):
     '''expression : NUMBER
-                  | IMAGINARY_NUMBER
-                  | BASED_NUMBER'''
+                  | IMAGINARY_NUMBER'''
     p[0] = Number(value=p[1], lineno=p.lineno(1))
 
 def p_expression_boolean(p):
