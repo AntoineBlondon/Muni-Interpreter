@@ -161,7 +161,9 @@ def p_for_loop(p):
     else:
         p[0] = ForStatement(begin_statement=p[3], condition=p[4], end_statement=p[5], body=p[8], lineno=p.lineno(1))
 
-
+def p_d_expression(p):
+    '''expression : dot_expression'''
+    p[0] = p[1]
 
 
 def p_switch_statement(p):
@@ -237,7 +239,8 @@ def p_return_statement(p):
 
 
 def p_expression_function_call(p):
-    'expression : expression LPAREN argument_list RPAREN'
+    '''expression : dot_expression LPAREN argument_list RPAREN
+                  | IDENTIFIER LPAREN argument_list RPAREN'''
     p[0] = FunctionCall(name=p[1], arguments=p[3], lineno=p.lineno(1))
 
 def p_signal_declaration(p):
@@ -278,7 +281,7 @@ def p_import_statement(p):
 
 
 def p_expression_dot(p):
-    '''expression : expression DOT IDENTIFIER'''
+    '''dot_expression : IDENTIFIER DOT IDENTIFIER'''
     p[0] = DotAccess(container=p[1], attribute=p[3], lineno=p.lineno(1))
 
 
