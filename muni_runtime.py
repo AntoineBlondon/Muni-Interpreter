@@ -251,7 +251,7 @@ class Runtime:
                 if isinstance(node.name, DotAccess):
                     function = self.get_function(f"{node.name.container.name}.{node.name.attribute}")
                 else:
-                    function = self.get_function(node.name.name)
+                    function = self.get_function(node.name)
 
                 if function is None:
                     raise Muni_Error(f"Function Error: {node.name} not a function.")
