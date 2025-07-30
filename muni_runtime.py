@@ -249,7 +249,8 @@ class Runtime:
 
             elif isinstance(node, FunctionCall):
                 if isinstance(node.name, DotAccess):
-                    function = self.get_function(f"{node.name.container.name}.{node.name.attribute}")
+                    print(node.name.container)
+                    function = self.get_function(f"{node.name.container}.{node.name.attribute}")
                 else:
                     function = self.get_function(node.name)
 
@@ -518,17 +519,18 @@ class Runtime:
         module_path = node.module_path
         alias = node.as_name if node.as_name is not None else ""
 
-        if module_path.endswith(':py'):
-            module_path = module_path[:-3]
-            imported_module = importlib.import_module(module_path)
-            self.update_functions_with_alias(imported_module.__dict__, alias)
-        elif module_path.endswith('.py'):
-            if not os.path.exists(module_path):
-                raise Muni_Error(f"File {module_path} not found")
-            imported_file = self.import_from_absolute_path(module_path)
-            self.update_functions_with_alias(imported_file.__dict__, alias)
+        if module_path.endswith('.py'):
+            if module_path.startswith('./'):
+                if not os.path.exists(module_path):
+                    raise Muni_Error(f"File {module_path} not found")
+                imported_file = self.import_from_absolute_path(module_path)
+                self.update_functions_with_alias(imported_file.__dict__, alias)
+            else:
+                module_path = module_path[:-3]
+                imported_module = importlib.import_module(module_path)
+                self.update_functions_with_alias(imported_module.__dict__, alias)
 
-        elif module_path.endswith('.mun'):
+        elif module_path.endswith('.mun') and module_path.startswith('./'):
             if not os.path.exists(module_path):
                 raise Muni_Error(f"File {module_path} not found")
 
@@ -536,7 +538,7 @@ class Runtime:
             imported_ast = muni_parser.parse_file(module_path)
             for statement in imported_ast.statements:
                 self.evaluate(statement)
-        elif module_path.endswith(':lib'):
+        elif module_path.endswith('.lib'):
             library_name = module_path[:-4]
             library_path = os.path.join(os.path.dirname(__file__), "libraries", f"lib_{library_name}.py")
             if not os.path.exists(library_path):
@@ -566,8 +568,8 @@ class Runtime:
     def update_functions_with_alias(self, imported_functions, alias):
         for func_name in imported_functions:
             if alias:
-                self.functions[f"{alias}_{func_name}"] = imported_functions[func_name]
-                self.imported_functions.append(f"{alias}_{func_name}")
+                self.functions[f"{alias}.{func_name}"] = imported_functions[func_name]
+                self.imported_functions.append(f"{alias}.{func_name}")
             else:
                 self.functions[func_name] = imported_functions[func_name]
                 self.imported_functions.append(func_name)

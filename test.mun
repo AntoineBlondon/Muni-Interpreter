@@ -1,10 +1,23 @@
-module a {
-    void hello() {
-        print("hi");
+import <textual.lib> as t;
+
+
+module c {
+    int add(int n, int m) {
+        return n + m;
     }
-    boolean b = false;
 }
 
-a.hello();
 
-print(a.b);
+string a = "hello";
+
+list<string> b = ["1", "2"];
+
+print(c.add((b[0] -> int), 3));
+
+
+
+? app = t.create_app();
+
+
+t.run_app(app);
+
