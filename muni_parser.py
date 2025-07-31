@@ -3,7 +3,7 @@ from muni_lexer import tokens, keywords
 from muni_ast_nodes import *
 
 precedence = (
-    ('left', 'RARROW'),
+    ('right', 'RARROW'),
     ('left', 'PLUS', 'MINUS'),
     ('left', 'MUL', 'DIV'),
     ('left', 'AMPERSAND', 'PIPE'),

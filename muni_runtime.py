@@ -249,7 +249,6 @@ class Runtime:
 
             elif isinstance(node, FunctionCall):
                 if isinstance(node.name, DotAccess):
-                    print(node.name.container)
                     function = self.get_function(f"{node.name.container}.{node.name.attribute}")
                 else:
                     function = self.get_function(node.name)

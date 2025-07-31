@@ -1,7 +1,8 @@
 import <textual.lib> as t;
 
 
-module c {
+module c
+{
     int add(int a, int b) {
         return a + b;
     }
@@ -10,14 +11,12 @@ module c {
 
 string a = "hello";
 
+watch (a) {
+    print("a changed to " + (a -> string));
+}
+
+
 list<string> b = ["1", "2"];
 
+a = "yoooo";
 print(c.add((b[0] -> int), 3));
-
-
-
-? app = t.create_app();
-
-
-t.run_app(app);
-
